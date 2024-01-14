@@ -14,7 +14,7 @@ class StopArmAndWrist(commands2.CommandBase):
 
         self.arm_sub = arm_sub
         self.wrist_sub = wrist_sub
-        self.addRequirements([self.arm_sub, self.wrist_sub])
+        self.addRequirements(self.arm_sub, self.wrist_sub)
 
     def execute(self) -> None:
         self.arm_sub.arm_motor.set(0)

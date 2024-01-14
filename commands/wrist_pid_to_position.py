@@ -18,7 +18,7 @@ class WristPIDToPosition(commands2.PIDCommand):
             # Pipe output to turn arm
             lambda output: wrist_sub.set_motor_speed(output),
             # Require the arm
-            [wrist_sub]
+            wrist_sub
         )
 
     def isFinished(self) -> bool:

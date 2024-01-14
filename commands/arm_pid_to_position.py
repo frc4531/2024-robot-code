@@ -18,7 +18,7 @@ class ArmPIDToPosition(commands2.PIDCommand):
             # Pipe output to turn arm
             lambda output: arm_sub.set_motor_speed(output),
             # Require the arm
-            [arm_sub]
+            arm_sub
         )
 
     def isFinished(self) -> bool:

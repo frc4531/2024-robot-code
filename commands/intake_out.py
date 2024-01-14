@@ -12,7 +12,7 @@ class IntakeOut(commands2.CommandBase):
         super().__init__()
 
         self.intake_sub = intake_sub
-        self.addRequirements([self.intake_sub])
+        self.addRequirements(self.intake_sub)
 
     def execute(self) -> None:
         self.intake_sub.set_motor_speed(0.7)
