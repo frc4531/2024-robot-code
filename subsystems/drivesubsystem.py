@@ -78,10 +78,10 @@ class DriveSubsystem(SubsystemBase):
         # Update the odometry in the periodic block
         self.odometry.update(
             Rotation2d.fromDegrees(self.gyro.getAngle()),
-            self.frontLeft.getPosition(),
+            [self.frontLeft.getPosition(),
             self.frontRight.getPosition(),
             self.rearLeft.getPosition(),
-            self.rearRight.getPosition(),
+            self.rearRight.getPosition()]
         )
 
     def getPose(self) -> Pose2d:
