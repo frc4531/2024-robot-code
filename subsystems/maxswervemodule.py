@@ -2,7 +2,7 @@ from rev import CANSparkMax, SparkMaxAbsoluteEncoder
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
 
-from constants import ModuleConstants
+from constants.swerve_constants import ModuleConstants
 
 
 class MAXSwerveModule:

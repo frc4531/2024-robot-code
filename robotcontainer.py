@@ -10,16 +10,11 @@ from wpimath.controller import PIDController, ProfiledPIDControllerRadians
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
 
-from commands.arm_pid_to_position import ArmPIDToPosition
 # from commands.drive_along_trajectory import DriveAlongTrajectory
 from commands.intake_in import IntakeIn
 from commands.intake_out import IntakeOut
-from commands.stop_arm_and_wrist import StopArmAndWrist
-from commands.wrist_pid_to_position import WristPIDToPosition
-from constants import AutoConstants, DriveConstants, OIConstants
-from subsystems.arm_subsystem import ArmSubsystem
+from constants.swerve_constants import AutoConstants, DriveConstants, OIConstants
 from subsystems.intake_subsystem import IntakeSubsystem
-from subsystems.wrist_subsystem import WristSubsystem
 from subsystems.drivesubsystem import DriveSubsystem
 
 
@@ -34,8 +29,6 @@ class RobotContainer:
     def __init__(self) -> None:
         # The robot's subsystems
         self.robotDrive = DriveSubsystem()
-        self.armSubsystem = ArmSubsystem()
-        self.wristSubsystem = WristSubsystem()
         self.intakeSubsystem = IntakeSubsystem()
 
         # The driver controllers
@@ -118,50 +111,6 @@ class RobotContainer:
             IntakeOut(self.intakeSubsystem)
         )
 
-        # CUBES MID
-        commands2.button.JoystickButton(self.operatorController, 1).onTrue(
-            WristPIDToPosition(self.wristSubsystem, 0.65)
-        )
-        commands2.button.JoystickButton(self.operatorController, 1).onTrue(
-            ArmPIDToPosition(self.armSubsystem, 0.80)
-        )
-
-        # SINGLE SUBSTATION PICKUP
-        commands2.button.JoystickButton(self.operatorController, 3).onTrue(
-            WristPIDToPosition(self.wristSubsystem, 0.45)
-        )
-        commands2.button.JoystickButton(self.operatorController, 3).onTrue(
-            ArmPIDToPosition(self.armSubsystem, 0.88)
-        )
-
-        # Same as last one above, but on driver controller for endgame
-        commands2.button.JoystickButton(self.driverController, 8).onTrue(
-            WristPIDToPosition(self.wristSubsystem, 0.45)
-        )
-        commands2.button.JoystickButton(self.driverController, 8).onTrue(
-            ArmPIDToPosition(self.armSubsystem, 0.88)
-        )
-
-        # IDLE STATE - ARM IS UP, WRIST IS DOWN FOR MOVEMENT
-        commands2.button.JoystickButton(self.operatorController, 4).onTrue(
-            WristPIDToPosition(self.wristSubsystem, 0.79)
-        )
-        commands2.button.JoystickButton(self.operatorController, 4).onTrue(
-            ArmPIDToPosition(self.armSubsystem, 0.67)
-        )
-        # FlOOR PICKUP - CUBES
-        commands2.button.JoystickButton(self.operatorController, 2).onTrue(
-            WristPIDToPosition(self.wristSubsystem, 0.675)
-        )
-        commands2.button.JoystickButton(self.operatorController, 2).onTrue(
-            ArmPIDToPosition(self.armSubsystem, 0.9)
-        )
-
-        # STOP ARM AND WRIST
-        commands2.button.JoystickButton(self.operatorController, 13).toggleOnTrue(
-            StopArmAndWrist(self.armSubsystem, self.wristSubsystem)
-        )
-
     def disablePIDSubsystems(self) -> None:
         """Disables all ProfiledPIDSubsystem and PIDSubsystem instances.
         This should be called on robot disable to prevent integral windup."""
@@ -236,31 +185,8 @@ class RobotContainer:
         self.robotDrive.resetOdometry(exampleTrajectory.initialPose())
 
         # Run path following command, then stop at the end.
-        return commands2.SequentialCommandGroup(
-            commands2.ParallelDeadlineGroup(
-                commands2.WaitCommand(2),
-                WristPIDToPosition(self.wristSubsystem, 0.79),
-                ArmPIDToPosition(self.armSubsystem, 0.67)
-            ),
-            commands2.ParallelDeadlineGroup(
-                commands2.WaitCommand(1),
-                WristPIDToPosition(self.wristSubsystem, 0.79),
-                ArmPIDToPosition(self.armSubsystem, 0.67),
-                IntakeOut(self.intakeSubsystem)
-            ),
-            commands2.ParallelDeadlineGroup(
-                swerveControllerCommand.andThen(
-                    lambda: self.robotDrive.drive(0, 0, 0, False, False)
-                ),
-                WristPIDToPosition(self.wristSubsystem, 0.79),
-                ArmPIDToPosition(self.armSubsystem, 0.67)
-            ),
-            commands2.ParallelDeadlineGroup(
-                commands2.WaitCommand(2),
-                WristPIDToPosition(self.wristSubsystem, 0.45),
-                ArmPIDToPosition(self.armSubsystem, 0.84)
-            )
-        )
+        return commands2.SequentialCommandGroup()
+
         # return swerveControllerCommand.andThen(
         #     lambda: self.robotDrive.drive(0, 0, 0, False, False)
         # )
