@@ -33,9 +33,9 @@ class DriveConstants:
     kRotationalSlewRate = 2.0  # percent per second (1 = 100%)
 
     # Chassis configuration
-    kTrackWidth = units.inchesToMeters(27.875)
+    kTrackWidth = units.inchesToMeters(24.5)
     # ^ Distance between centers of right and left wheels on robot
-    kWheelBase = units.inchesToMeters(24.25)
+    kWheelBase = units.inchesToMeters(26.5)
     # ^ Distance between front and back wheels on robot
 
     kModulePositions = [
