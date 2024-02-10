@@ -9,3 +9,6 @@ class IntakeSubsystem(SubsystemBase):
         super().__init__()
 
         self.intake_motor = rev.CANSparkMax(1,rev.CANSparkMax.MotorType.kBrushless)
+
+    def set_intake(self, speed):
+        self.intake_motor.set(speed)

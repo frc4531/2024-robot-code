@@ -1,7 +1,4 @@
-import typing
 import commands2
-import wpilib
-import wpimath.controller
 
 from subsystems.intake_subsystem import IntakeSubsystem
 
@@ -15,10 +12,10 @@ class IntakeIn(commands2.CommandBase):
         self.addRequirements(self.intake_sub)
 
     def execute(self) -> None:
-        self.intake_sub.set_motor_speed(-0.7)
+        self.intake_sub.set_intake_speed(-0.7)
 
     def isFinished(self) -> bool:
         return False
 
     def end(self, interrupted: bool) -> None:
-        self.intake_sub.set_motor_speed(0)
+        self.intake_sub.set_intake_speed(0)

@@ -1,4 +1,4 @@
-import phoenix6
+import phoenix5
 from commands2 import SubsystemBase
 
 
@@ -8,8 +8,9 @@ class ClimberSubsystem(SubsystemBase):
     def __init__(self) -> None:
         super().__init__()
 
-        self.left_climber = phoenix6.hardware.TalonFX(7,"rio")
-        self.left_climber_control = phoenix6.controls.DutyCycleOut(0)
+        self.left_climber = phoenix5.TalonFX(7,"rio")
+        self.right_climber = phoenix5.TalonFX(8,"rio")
 
-        self.right_climber = phoenix6.hardware.TalonFX(8,"rio")
-        self.right_climber_control = phoenix6.controls.DutyCycleOut(0)
+    def set_motors(self, left_speed,right_speed):
+        self.left_climber.set(phoenix5.ControlMode.PercentOutput, left_speed)
+        self.right_climber.set(phoenix5.ControlMode.PercentOutput, right_speed)

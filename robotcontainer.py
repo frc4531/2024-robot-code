@@ -13,9 +13,14 @@ from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
 # from commands.drive_along_trajectory import DriveAlongTrajectory
 from commands.intake_in import IntakeIn
 from commands.intake_out import IntakeOut
+from commands.pivot_down import PivotDown
+from commands.pivot_up import PivotUp
+from commands.shooter_spin_up import ShooterSpinUp
 from constants.swerve_constants import AutoConstants, DriveConstants, OIConstants
 from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.drivesubsystem import DriveSubsystem
+from subsystems.pivot_subsystem import PivotSubsystem
+from subsystems.shooter_subsystem import ShooterSubsystem
 
 
 class RobotContainer:
@@ -30,6 +35,8 @@ class RobotContainer:
         # The robot's subsystems
         self.robotDrive = DriveSubsystem()
         self.intakeSubsystem = IntakeSubsystem()
+        self.shooterSubsystem = ShooterSubsystem()
+        self.pivotSubsystem = PivotSubsystem()
 
         # The driver controllers
         self.driverController = wpilib.Joystick(OIConstants.kDriverControllerPort)
@@ -103,11 +110,24 @@ class RobotContainer:
             )
         )
 
+        # Toggle Shooter
+        commands2.button.JoystickButton(self.operatorController, 9).toggleOnTrue(
+            ShooterSpinUp(self.shooterSubsystem)
+        )
+
+        # Pivot up and down
+        commands2.button.JoystickButton(self.operatorController, 1).whileTrue(
+            PivotUp(self.shooterSubsystem)
+        )
+        commands2.button.JoystickButton(self.operatorController, 2).whileTrue(
+            PivotDown(self.shooterSubsystem)
+        )
+
         # Intake in and out
-        commands2.button.JoystickButton(self.operatorController, 5).whileTrue(
+        commands2.button.JoystickButton(self.operatorController, 3).whileTrue(
             IntakeIn(self.intakeSubsystem)
         )
-        commands2.button.JoystickButton(self.operatorController, 6).whileTrue(
+        commands2.button.JoystickButton(self.operatorController, 4).whileTrue(
             IntakeOut(self.intakeSubsystem)
         )
 
