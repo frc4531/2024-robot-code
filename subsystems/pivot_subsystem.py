@@ -14,8 +14,8 @@ class PivotSubsystem(SubsystemBase):
         self.pivot_motor = rev.CANSparkFlex(3, rev.CANSparkFlex.MotorType.kBrushless)
 
         self.pivot_encoder = wpilib.DutyCycleEncoder(channel=0)
-        self.arm_enconder.setPostionOffest(PivotConstants.kPivotOffset)
-        self.arm_encoder.setDutyCycleRange(0,1)
+        self.pivot_encoder.setPositionOffset(PivotConstants.kPivotOffset)
+        self.pivot_encoder.setDutyCycleRange(0, 1)
 
     def periodic(self) -> None:
         wpilib.SmartDashboard.putNumber("Pivot Encoder Value", self.get_position())

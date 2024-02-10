@@ -58,3 +58,7 @@ class ShooterSubsystem(SubsystemBase):
     def set_velocities(self, left_velocity,right_velocity):
         self.left_pid_controller.setReference(left_velocity, rev.CANSparkFlex.ControlType.kVelocity)
         self.right_pid_controller.setReference(right_velocity, rev.CANSparkFlex.ControlType.kVelocity)
+
+    def stop_shooter(self):
+        self.left_shooter_motor.stopMotor()
+        self.right_shooter_motor.stopMotor()
