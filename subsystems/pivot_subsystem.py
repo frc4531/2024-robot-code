@@ -6,7 +6,7 @@ from constants.pivot_constants import PivotConstants
 
 
 class PivotSubsystem(SubsystemBase):
-    # Create a new VisionSubsystem
+    # Create a new PivotSubsystem
 
     def __init__(self) -> None:
         super().__init__()

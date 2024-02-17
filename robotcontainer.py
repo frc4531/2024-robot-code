@@ -15,12 +15,14 @@ from commands.intake_in import IntakeIn
 from commands.intake_out import IntakeOut
 from commands.pivot_down import PivotDown
 from commands.pivot_up import PivotUp
+from commands.pivot_to_position import PivotToPosition
 from commands.shooter_spin_up import ShooterSpinUp
 from constants.swerve_constants import AutoConstants, DriveConstants, OIConstants
 from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.drivesubsystem import DriveSubsystem
 from subsystems.pivot_subsystem import PivotSubsystem
 from subsystems.shooter_subsystem import ShooterSubsystem
+from subsystems.vision_subsystem import VisionSubsystem
 
 
 class RobotContainer:
@@ -37,6 +39,7 @@ class RobotContainer:
         self.intakeSubsystem = IntakeSubsystem()
         self.shooterSubsystem = ShooterSubsystem()
         self.pivotSubsystem = PivotSubsystem()
+        self.visionSubsystem = VisionSubsystem()
 
         # The driver controllers
         self.driverController = wpilib.Joystick(OIConstants.kDriverControllerPort)
@@ -116,11 +119,14 @@ class RobotContainer:
         )
 
         # Pivot up and down
-        commands2.button.JoystickButton(self.operatorController, 1).whileTrue(
-            PivotUp(self.shooterSubsystem)
+        commands2.button.JoystickButton(self.operatorController, 5).onTrue(
+            PivotToPosition(self.pivotSubsystem, 0.35)
         )
-        commands2.button.JoystickButton(self.operatorController, 2).whileTrue(
-            PivotDown(self.shooterSubsystem)
+        commands2.button.JoystickButton(self.operatorController, 6).onTrue(
+            PivotToPosition(self.pivotSubsystem, 0.4)
+        )
+        commands2.button.JoystickButton(self.operatorController, 7).onTrue(
+            PivotToPosition(self.pivotSubsystem, 0.45)
         )
 
         # Intake in and out
