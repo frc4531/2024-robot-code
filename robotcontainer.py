@@ -17,12 +17,14 @@ from commands.pivot_down import PivotDown
 from commands.pivot_up import PivotUp
 from commands.pivot_to_position import PivotToPosition
 from commands.shooter_spin_up import ShooterSpinUp
+from commands.track_goal import TrackGoal
 from constants.swerve_constants import AutoConstants, DriveConstants, OIConstants
 from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.drivesubsystem import DriveSubsystem
 from subsystems.pivot_subsystem import PivotSubsystem
 from subsystems.shooter_subsystem import ShooterSubsystem
 from subsystems.vision_subsystem import VisionSubsystem
+
 
 
 class RobotContainer:
@@ -67,7 +69,7 @@ class RobotContainer:
                     -wpimath.applyDeadband(
                         self.driverController.getZ(), OIConstants.kDriveDeadband
                     ),
-                    True,
+                    False,
                     False,
                 ),
                 self.robotDrive,
@@ -112,19 +114,23 @@ class RobotContainer:
                 self.robotDrive,
             )
         )
-
+        # Toggle Speaker Vision Tracking
+        commands2.button.JoystickButton(self.operatorController, 10).toggleOnTrue(
+            TrackGoal(self.visionSubsystem,self.robotDrive,self.driverController)
+        )
         # Toggle Shooter
         commands2.button.JoystickButton(self.operatorController, 9).toggleOnTrue(
             ShooterSpinUp(self.shooterSubsystem)
         )
 
         # Pivot up and down
+        # Low (Podium)
         commands2.button.JoystickButton(self.operatorController, 5).onTrue(
             PivotToPosition(self.pivotSubsystem, 0.35)
-        )
+        ) # Middle (Speaker)
         commands2.button.JoystickButton(self.operatorController, 6).onTrue(
             PivotToPosition(self.pivotSubsystem, 0.4)
-        )
+        ) # High
         commands2.button.JoystickButton(self.operatorController, 7).onTrue(
             PivotToPosition(self.pivotSubsystem, 0.45)
         )
