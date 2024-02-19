@@ -59,6 +59,10 @@ class ShooterSubsystem(SubsystemBase):
         self.left_pid_controller.setReference(left_velocity, rev.CANSparkFlex.ControlType.kVelocity)
         self.right_pid_controller.setReference(right_velocity, rev.CANSparkFlex.ControlType.kVelocity)
 
+    def set_percentage_speed(self, left_percent, right_percent):
+        self.left_shooter_motor.set(left_percent)
+        self.right_shooter_motor.set(right_percent)
+
     def stop_shooter(self):
         self.left_shooter_motor.stopMotor()
         self.right_shooter_motor.stopMotor()

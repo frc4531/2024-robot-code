@@ -16,6 +16,7 @@ from commands.intake_out import IntakeOut
 from commands.pivot_down import PivotDown
 from commands.pivot_up import PivotUp
 from commands.pivot_to_position import PivotToPosition
+from commands.shooter_amp import ShooterAmp
 from commands.shooter_spin_up import ShooterSpinUp
 from commands.track_goal import TrackGoal
 from constants.swerve_constants import AutoConstants, DriveConstants, OIConstants
@@ -116,17 +117,20 @@ class RobotContainer:
         )
         # Toggle Speaker Vision Tracking
         commands2.button.JoystickButton(self.operatorController, 10).toggleOnTrue(
-            TrackGoal(self.visionSubsystem,self.robotDrive,self.driverController)
+            TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem, self.driverController)
         )
         # Toggle Shooter
         commands2.button.JoystickButton(self.operatorController, 9).toggleOnTrue(
             ShooterSpinUp(self.shooterSubsystem)
         )
-
+        # Shooter Amp
+        commands2.button.JoystickButton(self.operatorController, 11).toggleOnTrue(
+            ShooterAmp(self.shooterSubsystem)
+        )
         # Pivot up and down
         # Low (Podium)
         commands2.button.JoystickButton(self.operatorController, 5).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.35)
+            PivotToPosition(self.pivotSubsystem, 0.355) #7:45 : 0.41
         ) # Middle (Speaker)
         commands2.button.JoystickButton(self.operatorController, 6).onTrue(
             PivotToPosition(self.pivotSubsystem, 0.4)
