@@ -10,6 +10,10 @@ from wpimath.controller import PIDController, ProfiledPIDControllerRadians
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
 
+from commands.climber_r_down import ClimberRDown
+from commands.climber_r_up import ClimberRUp
+from commands.climbers_down import ClimbersDown
+from commands.climbers_up import ClimbersUp
 # from commands.drive_along_trajectory import DriveAlongTrajectory
 from commands.intake_in import IntakeIn
 from commands.intake_in_until_loaded import IntakeInUntilLoaded
@@ -22,6 +26,7 @@ from commands.shooter_spin_up import ShooterSpinUp
 from commands.track_game_piece import TrackGamePiece
 from commands.track_goal import TrackGoal
 from constants.swerve_constants import AutoConstants, DriveConstants, OIConstants
+from subsystems.climber_subsystem import ClimberSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.drivesubsystem import DriveSubsystem
 from subsystems.pivot_subsystem import PivotSubsystem
@@ -45,6 +50,7 @@ class RobotContainer:
         self.shooterSubsystem = ShooterSubsystem()
         self.pivotSubsystem = PivotSubsystem()
         self.visionSubsystem = VisionSubsystem()
+        self.climberSubsystem = ClimberSubsystem()
 
         # The driver controllers
         self.driverController = wpilib.Joystick(OIConstants.kDriverControllerPort)
@@ -121,6 +127,20 @@ class RobotContainer:
         commands2.button.JoystickButton(self.operatorController, 10).toggleOnTrue(
             TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem, self.driverController)
         )
+        # Climber controls
+        commands2.button.JoystickButton(self.operatorController, 1).whileTrue(
+            ClimbersUp(self.climberSubsystem)
+        )
+        commands2.button.JoystickButton(self.operatorController, 2).whileTrue(
+            ClimbersDown(self.climberSubsystem)
+        )
+        commands2.button.JoystickButton(self.operatorController, 3).whileTrue(
+            ClimberRUp(self.climberSubsystem)
+        )
+        commands2.button.JoystickButton(self.operatorController, 4).whileTrue(
+            ClimberRDown(self.climberSubsystem)
+        )
+
         # Toggle Shooter
         commands2.button.JoystickButton(self.operatorController, 9).toggleOnTrue(
             ShooterSpinUp(self.shooterSubsystem)
@@ -142,12 +162,12 @@ class RobotContainer:
         )
 
         # Intake in and out
-        commands2.button.JoystickButton(self.operatorController, 3).whileTrue(
-            IntakeIn(self.intakeSubsystem)
-        )
-        commands2.button.JoystickButton(self.operatorController, 4).whileTrue(
-            IntakeOut(self.intakeSubsystem)
-        )
+        # commands2.button.JoystickButton(self.operatorController, 3).whileTrue(
+        #     IntakeIn(self.intakeSubsystem)
+        # )
+        # commands2.button.JoystickButton(self.operatorController, 4).whileTrue(
+        #     IntakeOut(self.intakeSubsystem)
+        # )
         commands2.button.JoystickButton(self.operatorController, 12).onTrue(
             IntakeInUntilLoaded(self.intakeSubsystem)
         )
