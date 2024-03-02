@@ -12,12 +12,14 @@ from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
 
 # from commands.drive_along_trajectory import DriveAlongTrajectory
 from commands.intake_in import IntakeIn
+from commands.intake_in_until_loaded import IntakeInUntilLoaded
 from commands.intake_out import IntakeOut
 from commands.pivot_down import PivotDown
 from commands.pivot_up import PivotUp
 from commands.pivot_to_position import PivotToPosition
 from commands.shooter_amp import ShooterAmp
 from commands.shooter_spin_up import ShooterSpinUp
+from commands.track_game_piece import TrackGamePiece
 from commands.track_goal import TrackGoal
 from constants.swerve_constants import AutoConstants, DriveConstants, OIConstants
 from subsystems.intake_subsystem import IntakeSubsystem
@@ -130,7 +132,7 @@ class RobotContainer:
         # Pivot up and down
         # Low (Podium)
         commands2.button.JoystickButton(self.operatorController, 5).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.355) #7:45 : 0.41
+            PivotToPosition(self.pivotSubsystem, 0.34) #7:45 : 0.41
         ) # Middle (Speaker)
         commands2.button.JoystickButton(self.operatorController, 6).onTrue(
             PivotToPosition(self.pivotSubsystem, 0.4)
@@ -145,6 +147,12 @@ class RobotContainer:
         )
         commands2.button.JoystickButton(self.operatorController, 4).whileTrue(
             IntakeOut(self.intakeSubsystem)
+        )
+        commands2.button.JoystickButton(self.operatorController, 12).onTrue(
+            IntakeInUntilLoaded(self.intakeSubsystem)
+        )
+        commands2.button.JoystickButton(self.operatorController, 13).onTrue(
+            TrackGamePiece(self.intakeSubsystem, self.robotDrive, self.visionSubsystem, self.driverController)
         )
 
     def disablePIDSubsystems(self) -> None:

@@ -22,10 +22,14 @@ class NeoMotorConstants:
     kFreeSpeedRpm = 5676
 
 
+class VortexMotorConstants:
+    kFreeSpeedRpm = 6784
+
+
 class DriveConstants:
     # Driving Parameters - Note that these are not the maximum capable speeds of
     # the robot, rather the allowed maximum speeds
-    kMaxSpeedMetersPerSecond = 3
+    kMaxSpeedMetersPerSecond = 5.7
     kMaxAngularSpeed = math.tau  # radians per second
 
     kDirectionSlewRate = 1.2  # radians per second
@@ -83,7 +87,7 @@ class ModuleConstants:
     kTurningEncoderInverted = True
 
     # Calculations required for driving motor conversion factors and feed forward
-    kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60
+    kDrivingMotorFreeSpeedRps = VortexMotorConstants.kFreeSpeedRpm / 60
     kWheelDiameterMeters = 0.0762
     kWheelCircumferenceMeters = kWheelDiameterMeters * math.pi
     # 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion

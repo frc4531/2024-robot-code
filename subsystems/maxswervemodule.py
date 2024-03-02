@@ -1,4 +1,4 @@
-from rev import CANSparkMax, SparkMaxAbsoluteEncoder
+from rev import CANSparkMax, SparkMaxAbsoluteEncoder, CANSparkFlex
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
 
@@ -19,7 +19,7 @@ class MAXSwerveModule:
         self.desiredState = SwerveModuleState(0.0, Rotation2d())
 
         self.drivingSparkMax = CANSparkMax(
-            drivingCANId, CANSparkMax.MotorType.kBrushless
+            drivingCANId, CANSparkFlex.MotorType.kBrushless
         )
         self.turningSparkMax = CANSparkMax(
             turningCANId, CANSparkMax.MotorType.kBrushless
