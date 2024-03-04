@@ -20,8 +20,8 @@ class TrackGoal(commands2.CommandBase):
         self.pivot_sub = pivot_sub
         self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub)
 
-        self.close_camera_y = 5
-        self.far_camera_y = -20
+        self.close_camera_y = 20.5
+        self.far_camera_y = -9.2
         self.close_angle = 0.4
         self.far_angle = 0.35
 
@@ -77,7 +77,7 @@ class TrackGoal(commands2.CommandBase):
                 OIConstants.kDriveDeadband
             ),
             -wpimath.applyDeadband(
-                -z_output, OIConstants.kDriveDeadband
+                -z_output, OIConstants.kDriveTurnDeadband
             ),
             False,
             False),

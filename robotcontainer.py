@@ -115,7 +115,7 @@ class RobotContainer:
                         OIConstants.kDriveDeadband
                     ),
                     -wpimath.applyDeadband(
-                        self.driverController.getZ() * 0.5, OIConstants.kDriveDeadband
+                        self.driverController.getZ() * 0.5, OIConstants.kDriveTurnDeadband
                     ),
                     True,
                     False,
@@ -150,16 +150,22 @@ class RobotContainer:
             ShooterAmp(self.shooterSubsystem)
         )
         # Pivot up and down
-        # Low (Podium)
-        commands2.button.JoystickButton(self.operatorController, 5).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.34) #7:45 : 0.41
+        commands2.button.JoystickButton(self.operatorController, 5).whileTrue(
+            PivotUp(self.pivotSubsystem) #7:45 : 0.41
         ) # Middle (Speaker)
-        commands2.button.JoystickButton(self.operatorController, 6).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.4)
+        commands2.button.JoystickButton(self.operatorController, 6).whileTrue(
+            PivotDown(self.pivotSubsystem)
         ) # High
-        commands2.button.JoystickButton(self.operatorController, 7).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.45)
-        )
+        # # Low (Podium)
+        # commands2.button.JoystickButton(self.operatorController, 5).onTrue(
+        #     PivotToPosition(self.pivotSubsystem, 0.34) #7:45 : 0.41
+        # ) # Middle (Speaker)
+        # commands2.button.JoystickButton(self.operatorController, 6).onTrue(
+        #     PivotToPosition(self.pivotSubsystem, 0.4)
+        # ) # High
+        # commands2.button.JoystickButton(self.operatorController, 7).onTrue(
+        #     PivotToPosition(self.pivotSubsystem, 0.45)
+        # )
 
         # Intake in and out
         # commands2.button.JoystickButton(self.operatorController, 3).whileTrue(
@@ -171,8 +177,11 @@ class RobotContainer:
         commands2.button.JoystickButton(self.operatorController, 12).onTrue(
             IntakeInUntilLoaded(self.intakeSubsystem)
         )
-        commands2.button.JoystickButton(self.operatorController, 13).onTrue(
-            TrackGamePiece(self.intakeSubsystem, self.robotDrive, self.visionSubsystem, self.driverController)
+        # commands2.button.JoystickButton(self.operatorController, 13).onTrue(
+        #     TrackGamePiece(self.intakeSubsystem, self.robotDrive, self.visionSubsystem, self.driverController)
+        # )
+        commands2.button.JoystickButton(self.operatorController, 13).toggleOnTrue(
+            ShooterSpinUp(self.shooterSubsystem)
         )
 
     def disablePIDSubsystems(self) -> None:

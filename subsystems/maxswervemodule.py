@@ -18,7 +18,7 @@ class MAXSwerveModule:
         self.chassisAngularOffset = 0
         self.desiredState = SwerveModuleState(0.0, Rotation2d())
 
-        self.drivingSparkMax = CANSparkMax(
+        self.drivingSparkFlex = CANSparkFlex(
             drivingCANId, CANSparkFlex.MotorType.kBrushless
         )
         self.turningSparkMax = CANSparkMax(
@@ -27,15 +27,15 @@ class MAXSwerveModule:
 
         # Factory reset, so we get the SPARKS MAX to a known state before configuring
         # them. This is useful in case a SPARK MAX is swapped out.
-        self.drivingSparkMax.restoreFactoryDefaults()
+        self.drivingSparkFlex.restoreFactoryDefaults()
         self.turningSparkMax.restoreFactoryDefaults()
 
         # Setup encoders and PID controllers for the driving and turning SPARKS MAX.
-        self.drivingEncoder = self.drivingSparkMax.getEncoder()
+        self.drivingEncoder = self.drivingSparkFlex.getEncoder()
         self.turningEncoder = self.turningSparkMax.getAbsoluteEncoder(
             SparkMaxAbsoluteEncoder.Type.kDutyCycle
         )
-        self.drivingPIDController = self.drivingSparkMax.getPIDController()
+        self.drivingPIDController = self.drivingSparkFlex.getPIDController()
         self.turningPIDController = self.turningSparkMax.getPIDController()
         self.drivingPIDController.setFeedbackDevice(self.drivingEncoder)
         self.turningPIDController.setFeedbackDevice(self.turningEncoder)
@@ -96,9 +96,9 @@ class MAXSwerveModule:
             ModuleConstants.kTurningMinOutput, ModuleConstants.kTurningMaxOutput
         )
 
-        self.drivingSparkMax.setIdleMode(ModuleConstants.kDrivingMotorIdleMode)
+        self.drivingSparkFlex.setIdleMode(ModuleConstants.kDrivingMotorIdleMode)
         self.turningSparkMax.setIdleMode(ModuleConstants.kTurningMotorIdleMode)
-        self.drivingSparkMax.setSmartCurrentLimit(
+        self.drivingSparkFlex.setSmartCurrentLimit(
             ModuleConstants.kDrivingMotorCurrentLimit
         )
         self.turningSparkMax.setSmartCurrentLimit(
@@ -107,7 +107,7 @@ class MAXSwerveModule:
 
         # Save the SPARK MAX configurations. If a SPARK MAX browns out during
         # operation, it will maintain the above configurations.
-        self.drivingSparkMax.burnFlash()
+        self.drivingSparkFlex.burnFlash()
         self.turningSparkMax.burnFlash()
 
         self.chassisAngularOffset = chassisAngularOffset
