@@ -37,8 +37,8 @@ class TrackGoal(commands2.CommandBase):
 
         self.angle_controller = wpimath.controller.PIDController(7.5, 0, 0)
 
-    def initalize(self) -> None:
-        self.rot_controller.setTolerance(2)
+    def initialize(self) -> None:
+        self.rot_controller.setTolerance(0.1)
 
     def execute(self) -> None:
         target_angle = 0.36

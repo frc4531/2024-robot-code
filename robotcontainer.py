@@ -177,9 +177,9 @@ class RobotContainer:
         commands2.button.JoystickButton(self.operatorController, 12).onTrue(
             IntakeInUntilLoaded(self.intakeSubsystem)
         )
-        # commands2.button.JoystickButton(self.operatorController, 13).onTrue(
-        #     TrackGamePiece(self.intakeSubsystem, self.robotDrive, self.visionSubsystem, self.driverController)
-        # )
+        commands2.button.JoystickButton(self.operatorController, 7).onTrue(
+            TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem, self.driverController)
+        )
         commands2.button.JoystickButton(self.operatorController, 13).toggleOnTrue(
             ShooterSpinUp(self.shooterSubsystem)
         )

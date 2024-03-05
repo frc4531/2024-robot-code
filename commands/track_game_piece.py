@@ -21,50 +21,43 @@ class TrackGamePiece(commands2.CommandBase):
         self.intake_sub = intake_sub
         self.addRequirements(self.vision_sub, self.drive_sub, self.intake_sub)
 
-        self.close_camera_y = -20
-        self.far_camera_y = 20
-        self.close_speed = 0.1
-        self.far_speed = 0.8
-
-        self.cam_range = abs(self.close_camera_y - self.far_camera_y)
-        self.speed_range = abs(self.far_speed - self.close_speed)
-        self.cam_speed_ratio = self.speed_range / self.cam_range
-
         self.driver_controller = stick
         self.max_rot_speed = 0.8
         self.min_rot_speed = 0.05
 
-        self.rot_controller = wpimath.controller.PIDController(0.024, 0.01, 0)
+        self.alignment_tolerance = 7.5
+        self.forward_speed = 0.2
 
-        self.speed_controller = wpimath.controller.PIDController(0, 0, 0)
+        self.rot_controller = wpimath.controller.PIDController(0.011, 0, 0)
 
-    def initalize(self) -> None:
-        self.rot_controller.setTolerance(2)
+    def initialize(self) -> None:
+        self.rot_controller.setTolerance(0.2)
 
     def execute(self) -> None:
-        target_speed = 0.36
+        self.intake_sub.set_intake_speed(0.7)
 
-        if self.vision_sub.current_intake_v == 1:
-            if self.close_camera_y > self.vision_sub.current_intake_y > self.far_camera_y:
-                target_speed = (((self.vision_sub.current_intake_y-self.far_camera_y) * self.angle_range) / self.cam_range) + self.far_angle
-                wpilib.SmartDashboard.putNumber("Target Speed", target_speed)
-                if self.close_speed < target_speed < self.far_speed:
-                    target_speed = self.speed_controller.calculate(self.pivot_sub.get_position(), target_speed)
-                    self.drive_sub.xSpeed(target_speed)
-                else:
-                    self.drive_sub.xSpeed(0)
-
-        # ---- END ANGLE BLOCK, START TURN BLOCK
-        pid_output = self.rot_controller.calculate(self.vision_sub.current_intake_x, 0)
-        z_output = max(min(pid_output, self.max_rot_speed), -self.max_rot_speed)
-
-        if 0 < z_output < self.min_rot_speed:
-            z_output = self.min_rot_speed
-        elif -self.min_rot_speed < z_output < 0:
-            z_output = -self.min_rot_speed
-
-        if self.vision_sub.current_shoot_x == 1:
+        if self.vision_sub.current_intake_v == 1 and self.vision_sub.current_intake_y < 20:
+            pid_output = self.rot_controller.calculate(self.vision_sub.current_intake_x, 0)
             z_output = max(min(pid_output, self.max_rot_speed), -self.max_rot_speed)
+
+            if 0 < z_output < self.min_rot_speed:
+                z_output = self.min_rot_speed
+            elif -self.min_rot_speed < z_output < 0:
+                z_output = -self.min_rot_speed
+
+            if self.vision_sub.current_intake_x == 1:
+                z_output = max(min(pid_output, self.max_rot_speed), -self.max_rot_speed)
+
+            if -self.alignment_tolerance < self.vision_sub.current_intake_x < self.alignment_tolerance:
+                y_output = self.forward_speed
+            else:
+                y_output = ((-self.driver_controller.getY() * math.cos(self.drive_sub.getHeading() * (math.pi / 180))) +
+                            (self.driver_controller.getX() * math.sin(self.drive_sub.getHeading() * (math.pi / 180))))
+
+        else:
+            z_output = self.driver_controller.getZ() * 0.5
+            y_output = ((-self.driver_controller.getY() * math.cos(self.drive_sub.getHeading() * (math.pi / 180))) +
+                            (self.driver_controller.getX() * math.sin(self.drive_sub.getHeading() * (math.pi / 180))))
 
         self.drive_sub.drive(
             -wpimath.applyDeadband(
@@ -73,9 +66,7 @@ class TrackGamePiece(commands2.CommandBase):
                 OIConstants.kDriveDeadband
             ),
             -wpimath.applyDeadband(
-                (-self.driver_controller.getY() * math.cos(self.drive_sub.getHeading() * (math.pi / 180))) +
-                (self.driver_controller.getX() * math.sin(self.drive_sub.getHeading() * (math.pi / 180))),
-                OIConstants.kDriveDeadband
+                y_output, OIConstants.kDriveDeadband
             ),
             -wpimath.applyDeadband(
                 -z_output, OIConstants.kDriveDeadband
@@ -86,4 +77,4 @@ class TrackGamePiece(commands2.CommandBase):
         return self.intake_sub.intake_prox.get()
 
     def end(self, interrupted: bool) -> None:
-        self.drive_sub.xSpeed(0)
+        self.intake_sub.set_intake_speed(0)
