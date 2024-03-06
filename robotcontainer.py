@@ -22,6 +22,7 @@ from commands.pivot_down import PivotDown
 from commands.pivot_up import PivotUp
 from commands.pivot_to_position import PivotToPosition
 from commands.shooter_amp import ShooterAmp
+from commands.amp_up import AmpUp
 from commands.shooter_spin_up import ShooterSpinUp
 from commands.track_game_piece import TrackGamePiece
 from commands.track_goal import TrackGoal
@@ -32,6 +33,7 @@ from subsystems.drivesubsystem import DriveSubsystem
 from subsystems.pivot_subsystem import PivotSubsystem
 from subsystems.shooter_subsystem import ShooterSubsystem
 from subsystems.vision_subsystem import VisionSubsystem
+from subsystems.amp_subsystem import AmpSubsystem
 
 
 
@@ -51,6 +53,7 @@ class RobotContainer:
         self.pivotSubsystem = PivotSubsystem()
         self.visionSubsystem = VisionSubsystem()
         self.climberSubsystem = ClimberSubsystem()
+        self.ampSubsystem = AmpSubsystem()
 
         # The driver controllers
         self.driverController = wpilib.Joystick(OIConstants.kDriverControllerPort)
@@ -146,8 +149,11 @@ class RobotContainer:
             ShooterSpinUp(self.shooterSubsystem)
         )
         # Shooter Amp
-        commands2.button.JoystickButton(self.operatorController, 11).toggleOnTrue(
+        commands2.button.JoystickButton(self.operatorController, 11).whileTrue(
             ShooterAmp(self.shooterSubsystem)
+        )
+        commands2.button.JoystickButton(self.operatorController, 11).whileTrue(
+            IntakeIn(self.intakeSubsystem)
         )
         # Pivot up and down
         commands2.button.JoystickButton(self.operatorController, 5).whileTrue(
@@ -157,9 +163,9 @@ class RobotContainer:
             PivotDown(self.pivotSubsystem)
         ) # High
         # # Low (Podium)
-        # commands2.button.JoystickButton(self.operatorController, 5).onTrue(
-        #     PivotToPosition(self.pivotSubsystem, 0.34) #7:45 : 0.41
-        # ) # Middle (Speaker)
+        commands2.button.JoystickButton(self.driverController, 8).onTrue(
+            PivotToPosition(self.pivotSubsystem, 0.34) #7:45 : 0.41
+        ) # Middle (Speaker)
         # commands2.button.JoystickButton(self.operatorController, 6).onTrue(
         #     PivotToPosition(self.pivotSubsystem, 0.4)
         # ) # High
@@ -182,6 +188,10 @@ class RobotContainer:
         )
         commands2.button.JoystickButton(self.operatorController, 13).toggleOnTrue(
             ShooterSpinUp(self.shooterSubsystem)
+        )
+        # Amp Commands
+        commands2.button.JoystickButton(self.driverController, 8).whileTrue(
+            AmpUp(self.ampSubsystem)
         )
 
     def disablePIDSubsystems(self) -> None:
