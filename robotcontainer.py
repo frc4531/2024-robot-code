@@ -10,6 +10,9 @@ from wpimath.controller import PIDController, ProfiledPIDControllerRadians
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
 
+from commands.amp_down import AmpDown
+from commands.climber_l_down import ClimberLDown
+from commands.climber_l_up import ClimberLUp
 from commands.climber_r_down import ClimberRDown
 from commands.climber_r_up import ClimberRUp
 from commands.climbers_down import ClimbersDown
@@ -27,7 +30,8 @@ from commands.shooter_spin_up import ShooterSpinUp
 from commands.track_game_piece import TrackGamePiece
 from commands.track_goal import TrackGoal
 from constants.swerve_constants import AutoConstants, DriveConstants, OIConstants
-from subsystems.climber_subsystem import ClimberSubsystem
+from subsystems.right_climber_subsystem import RightClimberSubsystem
+from subsystems.left_climber_subsystem import LeftClimberSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.drivesubsystem import DriveSubsystem
 from subsystems.pivot_subsystem import PivotSubsystem
@@ -52,7 +56,8 @@ class RobotContainer:
         self.shooterSubsystem = ShooterSubsystem()
         self.pivotSubsystem = PivotSubsystem()
         self.visionSubsystem = VisionSubsystem()
-        self.climberSubsystem = ClimberSubsystem()
+        self.rightClimberSubsystem = RightClimberSubsystem()
+        self.leftClimberSubsystem = LeftClimberSubsystem()
         self.ampSubsystem = AmpSubsystem()
 
         # The driver controllers
@@ -96,7 +101,7 @@ class RobotContainer:
         """
 
         # Set wheels to X (brake)
-        commands2.button.JoystickButton(self.driverController, 7).toggleOnTrue(
+        commands2.button.JoystickButton(self.driverController, 8).toggleOnTrue(
             commands2.RunCommand(
                 lambda: self.robotDrive.setX(),
                 self.robotDrive,
@@ -104,7 +109,7 @@ class RobotContainer:
         )
 
         # Slow mode
-        commands2.button.JoystickButton(self.driverController, 6).toggleOnTrue(
+        commands2.button.JoystickButton(self.driverController, 2).toggleOnTrue(
             commands2.RunCommand(
                 lambda: self.robotDrive.drive(
                     -wpimath.applyDeadband(
@@ -126,73 +131,68 @@ class RobotContainer:
                 self.robotDrive,
             )
         )
-        # Toggle Speaker Vision Tracking
-        commands2.button.JoystickButton(self.operatorController, 10).toggleOnTrue(
-            TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem, self.driverController)
-        )
-        # Climber controls
-        commands2.button.JoystickButton(self.operatorController, 1).whileTrue(
-            ClimbersUp(self.climberSubsystem)
-        )
-        commands2.button.JoystickButton(self.operatorController, 2).whileTrue(
-            ClimbersDown(self.climberSubsystem)
-        )
-        commands2.button.JoystickButton(self.operatorController, 3).whileTrue(
-            ClimberRUp(self.climberSubsystem)
-        )
-        commands2.button.JoystickButton(self.operatorController, 4).whileTrue(
-            ClimberRDown(self.climberSubsystem)
-        )
-
-        # Toggle Shooter
-        commands2.button.JoystickButton(self.operatorController, 9).toggleOnTrue(
-            ShooterSpinUp(self.shooterSubsystem)
-        )
-        # Shooter Amp
-        commands2.button.JoystickButton(self.operatorController, 11).whileTrue(
-            ShooterAmp(self.shooterSubsystem)
-        )
-        commands2.button.JoystickButton(self.operatorController, 11).whileTrue(
-            IntakeIn(self.intakeSubsystem)
-        )
-        # Pivot up and down
-        commands2.button.JoystickButton(self.operatorController, 5).whileTrue(
-            PivotUp(self.pivotSubsystem) #7:45 : 0.41
-        ) # Middle (Speaker)
-        commands2.button.JoystickButton(self.operatorController, 6).whileTrue(
-            PivotDown(self.pivotSubsystem)
-        ) # High
-        # # Low (Podium)
-        commands2.button.JoystickButton(self.driverController, 8).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.34) #7:45 : 0.41
-        ) # Middle (Speaker)
-        # commands2.button.JoystickButton(self.operatorController, 6).onTrue(
-        #     PivotToPosition(self.pivotSubsystem, 0.4)
-        # ) # High
-        # commands2.button.JoystickButton(self.operatorController, 7).onTrue(
-        #     PivotToPosition(self.pivotSubsystem, 0.45)
-        # )
-
-        # Intake in and out
-        # commands2.button.JoystickButton(self.operatorController, 3).whileTrue(
-        #     IntakeIn(self.intakeSubsystem)
-        # )
-        # commands2.button.JoystickButton(self.operatorController, 4).whileTrue(
-        #     IntakeOut(self.intakeSubsystem)
-        # )
-        commands2.button.JoystickButton(self.operatorController, 12).onTrue(
-            IntakeInUntilLoaded(self.intakeSubsystem)
-        )
-        commands2.button.JoystickButton(self.operatorController, 7).onTrue(
+        # Press for Note Vision Tracking
+        commands2.button.JoystickButton(self.driverController, 1).onTrue(
             TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem, self.driverController)
         )
-        commands2.button.JoystickButton(self.operatorController, 13).toggleOnTrue(
-            ShooterSpinUp(self.shooterSubsystem)
+        # Left Climber Up
+        commands2.button.JoystickButton(self.operatorController, 1).whileTrue(
+            ClimberLUp(self.leftClimberSubsystem)
         )
-        # Amp Commands
-        commands2.button.JoystickButton(self.driverController, 8).whileTrue(
+        # Left Climber Down
+        commands2.button.JoystickButton(self.operatorController, 2).whileTrue(
+            ClimberLDown(self.leftClimberSubsystem)
+        )
+        # Both Climbers Up
+        commands2.button.JoystickButton(self.operatorController, 3).whileTrue(
+            ClimbersUp(self.rightClimberSubsystem, self.leftClimberSubsystem)
+        )
+        # Both Climbers Down
+        commands2.button.JoystickButton(self.operatorController, 4).whileTrue(
+            ClimbersDown(self.rightClimberSubsystem, self.leftClimberSubsystem)
+        )
+        # Right Climber Up
+        commands2.button.JoystickButton(self.operatorController, 5).whileTrue(
+            ClimberRUp(self.rightClimberSubsystem)
+        )
+        # Right Climber Up
+        commands2.button.JoystickButton(self.operatorController, 6).whileTrue(
+            ClimberRDown(self.rightClimberSubsystem)
+        )
+        # Hold for Pivot Up
+        commands2.button.JoystickButton(self.operatorController, 7).whileTrue(
+            PivotUp(self.pivotSubsystem)
+        )
+        # Hold for Pivot Down
+        commands2.button.JoystickButton(self.operatorController, 8).whileTrue(
+            PivotDown(self.pivotSubsystem)
+        )
+        # Toggle Speaker Vision Tracking
+        commands2.button.JoystickButton(self.operatorController, 9).toggleOnTrue(
+            TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem, self.shooterSubsystem,
+                      self.driverController)
+        )
+        # Hold for Manual Intake In
+        commands2.button.JoystickButton(self.operatorController, 10).whileTrue(
+            IntakeIn(self.intakeSubsystem)
+        )
+
+        # Hold for Deploy Amp Flipper and Slow Shooter and Pivot to Amp Angle
+        commands2.button.JoystickButton(self.operatorController, 12).whileTrue(
             AmpUp(self.ampSubsystem)
         )
+        commands2.button.JoystickButton(self.operatorController, 12).whileTrue(
+            ShooterAmp(self.shooterSubsystem)
+        )
+        commands2.button.JoystickButton(self.operatorController, 12).onTrue(
+            PivotToPosition(self.pivotSubsystem, 0.36)
+        )
+        # Hold for Retract Amp Flipper
+        commands2.button.JoystickButton(self.operatorController, 13).whileTrue(
+            AmpDown(self.ampSubsystem)
+        )
+
+
 
     def disablePIDSubsystems(self) -> None:
         """Disables all ProfiledPIDSubsystem and PIDSubsystem instances.

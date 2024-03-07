@@ -12,7 +12,7 @@ class PivotDown(commands2.CommandBase):
         self.addRequirements(self.pivot_sub)
 
     def execute(self) -> None:
-        self.pivot_sub.set_pivot_speed(-0.1)
+        self.pivot_sub.set_pivot_speed(-0.25)
 
     def isFinished(self) -> bool:
         return False

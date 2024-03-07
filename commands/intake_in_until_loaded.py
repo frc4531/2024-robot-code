@@ -19,11 +19,11 @@ class IntakeInUntilLoaded(commands2.CommandBase):
     def execute(self) -> None:
         self.intake_sub.set_intake_speed(0.7)
 
-        if not self.intake_sub.intake_prox.get():
+        if self.intake_sub.intake_prox.get():
             self.proxim_has_been_false = True
 
     def isFinished(self) -> bool:
-        return self.intake_sub.intake_prox.get() and self.proxim_has_been_false
+        return not self.intake_sub.intake_prox.get() and self.proxim_has_been_false
 
     def end(self, interrupted: bool) -> None:
         self.intake_sub.set_intake_speed(0)

@@ -3,7 +3,7 @@ import commands2
 from subsystems.amp_subsystem import AmpSubsystem
 
 
-class AmpUp(commands2.CommandBase):
+class AmpDown(commands2.CommandBase):
 
     def __init__(self, amp_sub: AmpSubsystem) -> None:
         super().__init__()
@@ -12,7 +12,7 @@ class AmpUp(commands2.CommandBase):
         self.addRequirements(self.amp_sub)
 
     def execute(self) -> None:
-        self.amp_sub.set_amp_speed(-0.5)
+        self.amp_sub.set_amp_speed(-0.1)
 
     def isFinished(self) -> bool:
         return False

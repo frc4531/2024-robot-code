@@ -6,19 +6,22 @@ import wpimath.controller
 
 from constants.swerve_constants import OIConstants
 from subsystems.pivot_subsystem import PivotSubsystem
+from subsystems.shooter_subsystem import ShooterSubsystem
 from subsystems.vision_subsystem import VisionSubsystem
 from subsystems.drivesubsystem import DriveSubsystem
 
 
 class TrackGoal(commands2.CommandBase):
 
-    def __init__(self, vision_sub: VisionSubsystem, drive_sub: DriveSubsystem, pivot_sub: PivotSubsystem, stick: wpilib.Joystick) -> None:
+    def __init__(self, vision_sub: VisionSubsystem, drive_sub: DriveSubsystem, pivot_sub: PivotSubsystem,
+                 shooter_sub: ShooterSubsystem, stick: wpilib.Joystick) -> None:
         super().__init__()
 
         self.vision_sub = vision_sub
         self.drive_sub = drive_sub
         self.pivot_sub = pivot_sub
-        self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub)
+        self.shooter_sub = shooter_sub
+        self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub, self.shooter_sub)
 
         self.close_camera_y = 20.5
         self.far_camera_y = -9.2
@@ -39,6 +42,7 @@ class TrackGoal(commands2.CommandBase):
 
     def initialize(self) -> None:
         self.rot_controller.setTolerance(0.1)
+        self.shooter_sub.set_velocities(-5800, 6200)
 
     def execute(self) -> None:
         target_angle = 0.36
@@ -86,3 +90,4 @@ class TrackGoal(commands2.CommandBase):
 
     def end(self, interrupted: bool) -> None:
         self.pivot_sub.set_pivot_speed(0)
+        self.shooter_sub.stop_shooter()

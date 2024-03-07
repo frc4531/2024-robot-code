@@ -30,11 +30,16 @@ class TrackGamePiece(commands2.CommandBase):
 
         self.rot_controller = wpimath.controller.PIDController(0.011, 0, 0)
 
+        self.prox_has_been_false = False
+
     def initialize(self) -> None:
         self.rot_controller.setTolerance(0.2)
 
     def execute(self) -> None:
         self.intake_sub.set_intake_speed(0.7)
+
+        if self.intake_sub.intake_prox.get():
+            self.prox_has_been_false = True
 
         if self.vision_sub.current_intake_v == 1 and self.vision_sub.current_intake_y < 20:
             pid_output = self.rot_controller.calculate(self.vision_sub.current_intake_x, 0)
@@ -65,10 +70,10 @@ class TrackGamePiece(commands2.CommandBase):
                 -wpimath.applyDeadband(
                     y_output, OIConstants.kDriveDeadband
                 ),
-                -wpimath.applyDeadband(
+                wpimath.applyDeadband(
                     z_output, OIConstants.kDriveDeadband
                 ),
-                False,
+                True,
                 False,
             )
         else:
@@ -83,14 +88,15 @@ class TrackGamePiece(commands2.CommandBase):
                     (self.driver_controller.getX() * math.sin(self.drive_sub.getHeading() * (math.pi / 180))),
                     OIConstants.kDriveDeadband
                 ),
-                -wpimath.applyDeadband(
+                wpimath.applyDeadband(
                     z_output, OIConstants.kDriveDeadband
                 ),
                 True,
                 False,
             )
     def isFinished(self) -> bool:
-        return self.intake_sub.intake_prox.get()
+        return self.prox_has_been_false and not self.intake_sub.intake_prox.get()
+
 
     def end(self, interrupted: bool) -> None:
         self.intake_sub.set_intake_speed(0)

@@ -12,7 +12,7 @@ class ShooterAmp(commands2.CommandBase):
         self.addRequirements(self.shooter_sub)
 
     def execute(self) -> None:
-        self.shooter_sub.set_percentage_speed(-0.19, 0.19)
+        self.shooter_sub.set_percentage_speed(-0.2, 0.2)
 
     def isFinished(self) -> bool:
         return False
