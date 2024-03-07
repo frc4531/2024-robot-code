@@ -17,6 +17,7 @@ from commands.climber_r_down import ClimberRDown
 from commands.climber_r_up import ClimberRUp
 from commands.climbers_down import ClimbersDown
 from commands.climbers_up import ClimbersUp
+from commands.drive_along_trajectory import DriveAlongTrajectory
 # from commands.drive_along_trajectory import DriveAlongTrajectory
 from commands.intake_in import IntakeIn
 from commands.intake_in_until_loaded import IntakeInUntilLoaded
@@ -252,7 +253,7 @@ class RobotContainer:
         )
         thetaController.enableContinuousInput(-math.pi, math.pi)
 
-        swerveControllerCommand = commands2.Swerve4ControllerCommand(
+        swerveControllerCommand = commands2.SwerveControllerCommand(
             exampleTrajectory,
             self.robotDrive.getPose,  # Functional interface to feed supplier
             DriveConstants.kDriveKinematics,
@@ -268,7 +269,7 @@ class RobotContainer:
         self.robotDrive.resetOdometry(exampleTrajectory.initialPose())
 
         # Run path following command, then stop at the end.
-        return commands2.SequentialCommandGroup()
+        return DriveAlongTrajectory(self.robotDrive)
 
         # return swerveControllerCommand.andThen(
         #     lambda: self.robotDrive.drive(0, 0, 0, False, False)

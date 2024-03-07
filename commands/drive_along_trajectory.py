@@ -1,6 +1,6 @@
 import math
 import commands2
-from wpimath._controls._controls.controller import PIDController, ProfiledPIDControllerRadians
+from wpimath._controls._controls.controller import PIDController, ProfiledPIDControllerRadians, HolonomicDriveController
 from wpimath._controls._controls.trajectory import TrajectoryGenerator, TrajectoryConfig, Trajectory
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 
@@ -8,7 +8,7 @@ from constants.swerve_constants import AutoConstants, DriveConstants
 from subsystems.drivesubsystem import DriveSubsystem
 
 
-class DriveAlongTrajectory(commands2.Swerve4ControllerCommand):
+class DriveAlongTrajectory(commands2.SwerveControllerCommand):
 
     def __init__(self, drive_sub: DriveSubsystem) -> None:
         # Create config for trajectory
@@ -38,21 +38,23 @@ class DriveAlongTrajectory(commands2.Swerve4ControllerCommand):
 
         theta_controller.enableContinuousInput(-math.pi, math.pi)
 
-        super().__init__(
-            self.trajectory,
-            drive_sub.getPose,  # Functional interface to feed supplier
-            DriveConstants.kDriveKinematics,
-            # Position controllers
-            PIDController(AutoConstants.kPXController, 0, 0),
+        holonomic_controller = HolonomicDriveController(PIDController(AutoConstants.kPXController, 0, 0),
             PIDController(AutoConstants.kPYController, 0, 0),
-            theta_controller,
-            drive_sub.setModuleStates,
-            [drive_sub],
+            theta_controller)
+
+        super().__init__(
+            trajectory=self.trajectory,
+            pose=drive_sub.getPose,  # Functional interface to feed supplier
+            kinematics=DriveConstants.kDriveKinematics,
+            # Position controllers
+            controller=holonomic_controller,
+            outputModuleStates=drive_sub.setModuleStates,
+            requirements=drive_sub,
         )
 
         self.drive_sub = drive_sub
-        self.addRequirements([self.drive_sub])
+        self.addRequirements(self.drive_sub)
 
     def initialize(self) -> None:
         # Reset odometry to the starting pose of the trajectory.
-        self.robotDrive.resetOdometry(self.trajectory.initialPose())
+        self.drive_sub.resetOdometry(self.trajectory.initialPose())

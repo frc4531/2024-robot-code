@@ -222,7 +222,7 @@ class DriveSubsystem(SubsystemBase):
         self.rearLeft.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
         self.rearRight.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
 
-    def setModuleStates(self, desiredStates: typing.Tuple[SwerveModuleState]) -> None:
+    def setModuleStates(self, desiredStates: [SwerveModuleState]) -> None:
         """Sets the swerve ModuleStates.
 
         :param desiredStates: The desired SwerveModule states.
