@@ -84,7 +84,7 @@ class TrackGamePiece(commands2.CommandBase):
                     OIConstants.kDriveDeadband
                 ),
                 -wpimath.applyDeadband(
-                    self.driver_controller.getZ(), OIConstants.kDriveDeadband
+                    z_output, OIConstants.kDriveDeadband
                 ),
                 True,
                 False,
