@@ -57,21 +57,38 @@ class TrackGamePiece(commands2.CommandBase):
             z_output = self.driver_controller.getZ() * 0.5
             y_output = -self.driver_controller.getY()
 
-        self.drive_sub.drive(
-            -wpimath.applyDeadband(
-                (self.driver_controller.getY() * math.sin(self.drive_sub.getHeading() * (math.pi / 180))) +
-                (self.driver_controller.getX() * math.cos(self.drive_sub.getHeading() * (math.pi / 180))),
-                OIConstants.kDriveDeadband
-            ),
-            -wpimath.applyDeadband(
-                y_output, OIConstants.kDriveDeadband
-            ),
-            -wpimath.applyDeadband(
-                z_output, OIConstants.kDriveDeadband
-            ),
-            True,
-            False,
-        )
+        if -self.alignment_tolerance < self.vision_sub.current_intake_x < self.alignment_tolerance:
+            self.drive_sub.drive(
+                -wpimath.applyDeadband(
+                    self.driver_controller.getX(), OIConstants.kDriveDeadband
+                ),
+                -wpimath.applyDeadband(
+                    y_output, OIConstants.kDriveDeadband
+                ),
+                -wpimath.applyDeadband(
+                    z_output, OIConstants.kDriveDeadband
+                ),
+                False,
+                False,
+            )
+        else:
+            self.drive_sub.drive(
+                -wpimath.applyDeadband(
+                    (self.driver_controller.getY() * math.sin(self.drive_sub.getHeading() * (math.pi / 180))) +
+                    (self.driver_controller.getX() * math.cos(self.drive_sub.getHeading() * (math.pi / 180))),
+                    OIConstants.kDriveDeadband
+                ),
+                -wpimath.applyDeadband(
+                    (-self.driver_controller.getY() * math.cos(self.drive_sub.getHeading() * (math.pi / 180))) +
+                    (self.driver_controller.getX() * math.sin(self.drive_sub.getHeading() * (math.pi / 180))),
+                    OIConstants.kDriveDeadband
+                ),
+                -wpimath.applyDeadband(
+                    self.driver_controller.getZ(), OIConstants.kDriveDeadband
+                ),
+                True,
+                False,
+            )
     def isFinished(self) -> bool:
         return self.intake_sub.intake_prox.get()
 
