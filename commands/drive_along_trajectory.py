@@ -9,25 +9,50 @@ from subsystems.drivesubsystem import DriveSubsystem
 
 
 class DriveAlongTrajectory(commands2.Swerve4ControllerCommand):
-    thetaController = ProfiledPIDControllerRadians(
-        AutoConstants.kPThetaController,
-        0,
-        0,
-        AutoConstants.kThetaControllerConstraints,
-    )
-    thetaController.enableContinuousInput(-math.pi, math.pi)
 
-    def __init__(self, drive_sub: DriveSubsystem, trajectory: Trajectory) -> None:
+    def __init__(self, drive_sub: DriveSubsystem) -> None:
+        # Create config for trajectory
+        config = TrajectoryConfig(
+            AutoConstants.kMaxSpeedMetersPerSecond,
+            AutoConstants.kMaxAccelerationMetersPerSecondSquared,
+        )
+        # Add kinematics to ensure max speed is actually obeyed
+        config.setKinematics(DriveConstants.kDriveKinematics)
+
+        self.trajectory = TrajectoryGenerator.generateTrajectory(
+            # Start at the origin facing the +X direction
+            Pose2d(0, 0, Rotation2d(0)),
+            # Pass through these two interior waypoints, making an 's' curve path
+            [Translation2d(1, -1), Translation2d(2, 1)],
+            # End 3 meters straight ahead of where we started, facing forward
+            Pose2d(3, 0, Rotation2d(0)),  # -2.35
+            config,
+        )
+
+        theta_controller = ProfiledPIDControllerRadians(
+            AutoConstants.kPThetaController,
+            0,
+            0,
+            AutoConstants.kThetaControllerConstraints,
+        )
+
+        theta_controller.enableContinuousInput(-math.pi, math.pi)
+
         super().__init__(
-            trajectory,
-            drive_sub.getPose,
+            self.trajectory,
+            drive_sub.getPose,  # Functional interface to feed supplier
             DriveConstants.kDriveKinematics,
+            # Position controllers
             PIDController(AutoConstants.kPXController, 0, 0),
             PIDController(AutoConstants.kPYController, 0, 0),
-            self.thetaController,
+            theta_controller,
             drive_sub.setModuleStates,
             [drive_sub],
         )
 
         self.drive_sub = drive_sub
         self.addRequirements([self.drive_sub])
+
+    def initialize(self) -> None:
+        # Reset odometry to the starting pose of the trajectory.
+        self.robotDrive.resetOdometry(self.trajectory.initialPose())
