@@ -54,22 +54,20 @@ class TrackGamePiece(commands2.CommandBase):
                 y_output = -self.driver_controller.getY()
 
         else:
-            z_output = -self.driver_controller.getZ() * 0.5
-            y_output = self.driver_controller.getY()
+            z_output = self.driver_controller.getZ() * 0.5
+            y_output = -self.driver_controller.getY()
 
-        self.robotDrive.drive(
+        self.drive_sub.drive(
             -wpimath.applyDeadband(
-                ((y_output * math.sin(self.robotDrive.getHeading() * (math.pi / 180))) +
-                 (self.driverController.getX() * math.cos(self.robotDrive.getHeading() * (math.pi / 180)))) * 0.5,
+                (self.driver_controller.getY() * math.sin(self.drive_sub.getHeading() * (math.pi / 180))) +
+                (self.driver_controller.getX() * math.cos(self.drive_sub.getHeading() * (math.pi / 180))),
                 OIConstants.kDriveDeadband
             ),
             -wpimath.applyDeadband(
-                ((-y_output * math.cos(self.robotDrive.getHeading() * (math.pi / 180))) +
-                 (self.driverController.getX() * math.sin(self.robotDrive.getHeading() * (math.pi / 180)))) * 0.5,
-                OIConstants.kDriveDeadband
+                y_output, OIConstants.kDriveDeadband
             ),
             -wpimath.applyDeadband(
-                z_output, OIConstants.kDriveTurnDeadband
+                z_output, OIConstants.kDriveDeadband
             ),
             True,
             False,
