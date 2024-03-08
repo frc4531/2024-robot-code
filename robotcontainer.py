@@ -217,11 +217,11 @@ class RobotContainer:
         # An example trajectory to follow. All units in meters.
         exampleTrajectory = TrajectoryGenerator.generateTrajectory(
             # Start at the origin facing the +X direction
-            Pose2d(0, 0, Rotation2d(0)),
+            Pose2d(0, 0, Rotation2d.fromDegrees(0)),
             # Pass through these two interior waypoints, making an 's' curve path
-            [Translation2d(1, -1), Translation2d(2, 1)],
+            [],
             # End 3 meters straight ahead of where we started, facing forward
-            Pose2d(3, 0, Rotation2d(0)),
+            Pose2d(0, -2.5, Rotation2d.fromDegrees(90)),
             config,
         )
 
@@ -233,7 +233,9 @@ class RobotContainer:
         )
         thetaController.enableContinuousInput(-math.pi, math.pi)
 
-        holonomic_controller = HolonomicDriveController()
+        holonomic_controller = HolonomicDriveController(PIDController(AutoConstants.kPXController, 0, 0),
+            PIDController(AutoConstants.kPYController, 0, 0),
+            thetaController)
 
         swerveControllerCommand = commands2.SwerveControllerCommand(
             exampleTrajectory,
