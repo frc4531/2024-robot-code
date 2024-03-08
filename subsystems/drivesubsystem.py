@@ -99,11 +99,13 @@ class DriveSubsystem(SubsystemBase):
         """
         self.odometry.resetPosition(
             Rotation2d.fromDegrees(self.gyro.getAngle()),
+            (
+                self.frontLeft.getPosition(),
+                self.frontRight.getPosition(),
+                self.rearLeft.getPosition(),
+                self.rearRight.getPosition(),
+            ),
             pose,
-            self.frontLeft.getPosition(),
-            self.frontRight.getPosition(),
-            self.rearLeft.getPosition(),
-            self.rearRight.getPosition(),
         )
 
     def drive(

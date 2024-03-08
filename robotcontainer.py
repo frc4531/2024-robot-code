@@ -5,6 +5,7 @@ import commands2.button
 
 import wpimath
 import wpilib
+from wpimath._controls._controls.controller import HolonomicDriveController
 
 from wpimath.controller import PIDController, ProfiledPIDControllerRadians
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
@@ -213,37 +214,15 @@ class RobotContainer:
         config.setKinematics(DriveConstants.kDriveKinematics)
 
         # An example trajectory to follow. All units in meters.
-        if wpilib.Preferences.getBoolean("startingOnSides"):
-            exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-                # Start at the origin facing the +X direction
-                Pose2d(0, 0, Rotation2d(0)),
-                # Pass through these two interior waypoints, making an 's' curve path
-                [Translation2d(0, -1), Translation2d(0, -2)],
-                # End 3 meters straight ahead of where we started, facing forward
-                Pose2d(0, -4.5, Rotation2d(0)),
-                config,
-            )
-        elif wpilib.Preferences.getBoolean("onRedAlliance"):
-            exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-                # Start at the origin facing the +X direction
-                Pose2d(0, 0, Rotation2d(0)),
-                # Pass through these two interior waypoints, making an 's' curve path
-                [Translation2d(0, -1), Translation2d(0, -2)],
-                # End 3 meters straight ahead of where we started, facing forward
-                Pose2d(0, -2.45, Rotation2d(0)),
-                config,
-            )
-
-        else:
-            exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-                # Start at the origin facing the +X direction
-                Pose2d(0, 0, Rotation2d(0)),
-                # Pass through these two interior waypoints, making an 's' curve path
-                [Translation2d(1, -1), Translation2d(2, 1)],
-                # End 3 meters straight ahead of where we started, facing forward
-                Pose2d(3, 0, Rotation2d(0)),  # -2.35
-                config,
-            )
+        exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+            # Start at the origin facing the +X direction
+            Pose2d(0, 0, Rotation2d(0)),
+            # Pass through these two interior waypoints, making an 's' curve path
+            [Translation2d(1, 1), Translation2d(2, -1)],
+            # End 3 meters straight ahead of where we started, facing forward
+            Pose2d(3, 0, Rotation2d(0)),
+            config,
+        )
 
         thetaController = ProfiledPIDControllerRadians(
             AutoConstants.kPThetaController,
@@ -253,24 +232,27 @@ class RobotContainer:
         )
         thetaController.enableContinuousInput(-math.pi, math.pi)
 
+        holonomic_controller = HolonomicDriveController(PIDController(AutoConstants.kPXController, 0, 0),
+            PIDController(AutoConstants.kPYController, 0, 0),
+            thetaController)
+
         swerveControllerCommand = commands2.SwerveControllerCommand(
             exampleTrajectory,
             self.robotDrive.getPose,  # Functional interface to feed supplier
             DriveConstants.kDriveKinematics,
             # Position controllers
-            PIDController(AutoConstants.kPXController, 0, 0),
-            PIDController(AutoConstants.kPYController, 0, 0),
-            thetaController,
+            holonomic_controller,
             self.robotDrive.setModuleStates,
-            [self.robotDrive],
+            (self.robotDrive,),
         )
 
         # Reset odometry to the starting pose of the trajectory.
         self.robotDrive.resetOdometry(exampleTrajectory.initialPose())
 
         # Run path following command, then stop at the end.
-        return DriveAlongTrajectory(self.robotDrive)
-
-        # return swerveControllerCommand.andThen(
-        #     lambda: self.robotDrive.drive(0, 0, 0, False, False)
-        # )
+        return swerveControllerCommand.andThen(
+            commands2.run(
+                lambda: self.robotDrive.drive(0, 0, 0, False, False),
+                self.robotDrive,
+            )
+        )

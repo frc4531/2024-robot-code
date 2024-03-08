@@ -43,17 +43,17 @@ class DriveAlongTrajectory(commands2.SwerveControllerCommand):
             theta_controller)
 
         super().__init__(
-            trajectory=self.trajectory,
-            pose=drive_sub.getPose,  # Functional interface to feed supplier
-            kinematics=DriveConstants.kDriveKinematics,
+            self.trajectory,
+            drive_sub.getPose,  # Functional interface to feed supplier
+            DriveConstants.kDriveKinematics,
             # Position controllers
-            controller=holonomic_controller,
-            outputModuleStates=drive_sub.setModuleStates,
-            requirements=drive_sub,
+            holonomic_controller,
+            drive_sub.setModuleStates,
+            (drive_sub,),
         )
 
         self.drive_sub = drive_sub
-        self.addRequirements(self.drive_sub)
+        # self.addRequirements(self.drive_sub)
 
     def initialize(self) -> None:
         # Reset odometry to the starting pose of the trajectory.
