@@ -5,6 +5,7 @@ import commands2.button
 
 import wpimath
 import wpilib
+from commands2 import cmd
 from wpimath._controls._controls.controller import HolonomicDriveController
 
 from wpimath.controller import PIDController, ProfiledPIDControllerRadians
@@ -218,7 +219,7 @@ class RobotContainer:
             # Start at the origin facing the +X direction
             Pose2d(0, 0, Rotation2d(0)),
             # Pass through these two interior waypoints, making an 's' curve path
-            [Translation2d(1, 1), Translation2d(2, -1)],
+            [Translation2d(1, -1), Translation2d(2, 1)],
             # End 3 meters straight ahead of where we started, facing forward
             Pose2d(3, 0, Rotation2d(0)),
             config,
@@ -232,9 +233,7 @@ class RobotContainer:
         )
         thetaController.enableContinuousInput(-math.pi, math.pi)
 
-        holonomic_controller = HolonomicDriveController(PIDController(AutoConstants.kPXController, 0, 0),
-            PIDController(AutoConstants.kPYController, 0, 0),
-            thetaController)
+        holonomic_controller = HolonomicDriveController()
 
         swerveControllerCommand = commands2.SwerveControllerCommand(
             exampleTrajectory,
@@ -251,7 +250,7 @@ class RobotContainer:
 
         # Run path following command, then stop at the end.
         return swerveControllerCommand.andThen(
-            commands2.run(
+            cmd.run(
                 lambda: self.robotDrive.drive(0, 0, 0, False, False),
                 self.robotDrive,
             )

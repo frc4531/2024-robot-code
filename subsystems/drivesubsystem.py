@@ -65,12 +65,12 @@ class DriveSubsystem(SubsystemBase):
         self.odometry = SwerveDrive4Odometry(
             DriveConstants.kDriveKinematics,
             Rotation2d.fromDegrees(self.gyro.getAngle()),
-            [
-                self.frontLeft.getPosition(),  # ignore this error, it works like this
+            (
+                self.frontLeft.getPosition(),
                 self.frontRight.getPosition(),
                 self.rearLeft.getPosition(),
                 self.rearRight.getPosition(),
-            ],
+            ),
         )
 
     def periodic(self) -> None:
@@ -78,10 +78,10 @@ class DriveSubsystem(SubsystemBase):
         # Update the odometry in the periodic block
         self.odometry.update(
             Rotation2d.fromDegrees(self.gyro.getAngle()),
-            [self.frontLeft.getPosition(),
+            (self.frontLeft.getPosition(),
             self.frontRight.getPosition(),
             self.rearLeft.getPosition(),
-            self.rearRight.getPosition()]
+            self.rearRight.getPosition())
         )
 
     def getPose(self) -> Pose2d:
@@ -207,13 +207,13 @@ class DriveSubsystem(SubsystemBase):
             if not fieldRelative
             else ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered)
         )
-        swerveModuleStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(
+        fl, fr, rl, rr = SwerveDrive4Kinematics.desaturateWheelSpeeds(
             swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond
         )
-        self.frontLeft.setDesiredState(swerveModuleStates[0])
-        self.frontRight.setDesiredState(swerveModuleStates[1])
-        self.rearLeft.setDesiredState(swerveModuleStates[2])
-        self.rearRight.setDesiredState(swerveModuleStates[3])
+        self.frontLeft.setDesiredState(fl)
+        self.frontRight.setDesiredState(fr)
+        self.rearLeft.setDesiredState(rl)
+        self.rearRight.setDesiredState(rr)
 
     def setX(self) -> None:
         """Sets the wheels into an X formation to prevent movement."""
@@ -224,18 +224,23 @@ class DriveSubsystem(SubsystemBase):
         self.rearLeft.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
         self.rearRight.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
 
-    def setModuleStates(self, desiredStates: [SwerveModuleState]) -> None:
+    def setModuleStates(
+        self,
+        desiredStates: typing.Tuple[
+            SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState
+        ],
+    ) -> None:
         """Sets the swerve ModuleStates.
 
         :param desiredStates: The desired SwerveModule states.
         """
-        desiredStates = SwerveDrive4Kinematics.desaturateWheelSpeeds( # A warning here is expected, please ignore
+        fl, fr, rl, rr = SwerveDrive4Kinematics.desaturateWheelSpeeds(
             desiredStates, DriveConstants.kMaxSpeedMetersPerSecond
         )
-        self.frontLeft.setDesiredState(desiredStates[0])
-        self.frontRight.setDesiredState(desiredStates[1])
-        self.rearLeft.setDesiredState(desiredStates[2])
-        self.rearRight.setDesiredState(desiredStates[3])
+        self.frontLeft.setDesiredState(fl)
+        self.frontRight.setDesiredState(fr)
+        self.rearLeft.setDesiredState(rl)
+        self.rearRight.setDesiredState(rr)
 
     def resetEncoders(self) -> None:
         """Resets the drive encoders to currently read a position of 0."""
