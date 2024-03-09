@@ -54,6 +54,9 @@ class ShooterSubsystem(SubsystemBase):
         self.right_pid_controller.setFF(self.kP)
         self.right_pid_controller.setOutputRange(self.kMinOutput, self.kMaxOutput)
 
+        self.left_shooter_motor.setPeriodicFramePeriod(rev.CANSparkFlex.PeriodicFrame.kStatus1, 25)
+        self.right_shooter_motor.setPeriodicFramePeriod(rev.CANSparkFlex.PeriodicFrame.kStatus1, 25)
+
         # Sets velocity targets for both shooter motors
     def set_velocities(self, left_velocity,right_velocity):
         self.left_pid_controller.setReference(left_velocity, rev.CANSparkFlex.ControlType.kVelocity)

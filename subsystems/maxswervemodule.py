@@ -1,3 +1,4 @@
+import rev
 from rev import CANSparkMax, SparkMaxAbsoluteEncoder, CANSparkFlex
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
@@ -29,6 +30,8 @@ class MAXSwerveModule:
         # them. This is useful in case a SPARK MAX is swapped out.
         self.drivingSparkFlex.restoreFactoryDefaults()
         self.turningSparkMax.restoreFactoryDefaults()
+
+        self.drivingSparkFlex.setPeriodicFramePeriod(rev.CANSparkFlex.PeriodicFrame.kStatus2, 25)
 
         # Setup encoders and PID controllers for the driving and turning SPARKS MAX.
         self.drivingEncoder = self.drivingSparkFlex.getEncoder()
@@ -158,7 +161,7 @@ class MAXSwerveModule:
 
         # Command driving and turning SPARKS MAX towards their respective setpoints.
         self.drivingPIDController.setReference(
-            optimizedDesiredState.speed, CANSparkMax.ControlType.kVelocity
+            optimizedDesiredState.speed, CANSparkFlex.ControlType.kVelocity
         )
         self.turningPIDController.setReference(
             optimizedDesiredState.angle.radians(), CANSparkMax.ControlType.kPosition

@@ -15,7 +15,7 @@ from wpimath.geometry import Translation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath.trajectory import TrapezoidProfileRadians
 
-from rev import CANSparkMax
+from rev import CANSparkMax, CANSparkFlex
 
 
 class NeoMotorConstants:
@@ -123,7 +123,7 @@ class ModuleConstants:
     kTurningMinOutput = -1
     kTurningMaxOutput = 1
 
-    kDrivingMotorIdleMode = CANSparkMax.IdleMode.kBrake
+    kDrivingMotorIdleMode = CANSparkFlex.IdleMode.kBrake
     kTurningMotorIdleMode = CANSparkMax.IdleMode.kBrake
 
     kDrivingMotorCurrentLimit = 80  # amp

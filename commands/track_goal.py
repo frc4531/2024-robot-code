@@ -26,7 +26,7 @@ class TrackGoal(commands2.CommandBase):
 
         self.close_camera_y = 20.5
         self.far_camera_y = -9.2
-        self.close_angle = 0.4
+        self.close_angle = 0.41
         self.far_angle = 0.342
 
         self.cam_range = abs(self.close_camera_y - self.far_camera_y)
@@ -42,8 +42,8 @@ class TrackGoal(commands2.CommandBase):
         self.angle_controller = wpimath.controller.PIDController(7.5, 0, 0)
 
         # LED variables
-        self.angle_tolerance = 0.01
-        self.turn_tolerance = 0.5
+        self.angle_tolerance = 0.05
+        self.turn_tolerance = 2.5
 
     def initialize(self) -> None:
         self.rot_controller.setTolerance(0.1)
@@ -94,7 +94,6 @@ class TrackGoal(commands2.CommandBase):
             True,
             False),
         # End of Turning Block, start of LED block
-
         if -self.angle_tolerance < self.pivot_sub.get_position() < self.angle_tolerance:
             if -self.turn_tolerance < self.vision_sub.current_intake_x < self.turn_tolerance:
                 self.led_sub.set_color(0.77)
