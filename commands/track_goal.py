@@ -5,6 +5,7 @@ import wpilib
 import wpimath.controller
 
 from constants.swerve_constants import OIConstants
+from subsystems.led_subsystem import LedSubsystem
 from subsystems.pivot_subsystem import PivotSubsystem
 from subsystems.shooter_subsystem import ShooterSubsystem
 from subsystems.vision_subsystem import VisionSubsystem
@@ -14,19 +15,18 @@ from subsystems.drivesubsystem import DriveSubsystem
 class TrackGoal(commands2.CommandBase):
 
     def __init__(self, vision_sub: VisionSubsystem, drive_sub: DriveSubsystem, pivot_sub: PivotSubsystem,
-                 shooter_sub: ShooterSubsystem, stick: wpilib.Joystick) -> None:
+                 led_sub: LedSubsystem, stick: wpilib.Joystick) -> None:
         super().__init__()
 
         self.vision_sub = vision_sub
         self.drive_sub = drive_sub
         self.pivot_sub = pivot_sub
-        self.shooter_sub = shooter_sub
-        self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub, self.shooter_sub)
+        self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub)
 
         self.close_camera_y = 20.5
         self.far_camera_y = -9.2
         self.close_angle = 0.4
-        self.far_angle = 0.35
+        self.far_angle = 0.342
 
         self.cam_range = abs(self.close_camera_y - self.far_camera_y)
         self.angle_range = abs(self.close_angle-self.far_angle)
@@ -42,7 +42,7 @@ class TrackGoal(commands2.CommandBase):
 
     def initialize(self) -> None:
         self.rot_controller.setTolerance(0.1)
-        self.shooter_sub.set_velocities(-5800, 6200)
+        # self.shooter_sub.set_velocities(-6000, 6500)
 
     def execute(self) -> None:
         target_angle = 0.36
@@ -58,16 +58,19 @@ class TrackGoal(commands2.CommandBase):
                     self.pivot_sub.set_pivot_speed(0)
 
         # ---- END ANGLE BLOCK, START TURN BLOCK
-        pid_output = self.rot_controller.calculate(self.vision_sub.current_shoot_x, 0)
-        z_output = max(min(pid_output, self.max_rot_speed), -self.max_rot_speed)
-
-        if 0 < z_output < self.min_rot_speed:
-            z_output = self.min_rot_speed
-        elif -self.min_rot_speed < z_output < 0:
-            z_output = -self.min_rot_speed
-
-        if self.vision_sub.current_shoot_x == 1:
+        if self.vision_sub.current_shoot_v == 1:
+            pid_output = self.rot_controller.calculate(self.vision_sub.current_shoot_x, 0)
             z_output = max(min(pid_output, self.max_rot_speed), -self.max_rot_speed)
+
+            if 0 < z_output < self.min_rot_speed:
+                z_output = self.min_rot_speed
+            elif -self.min_rot_speed < z_output < 0:
+                z_output = -self.min_rot_speed
+
+            if self.vision_sub.current_shoot_x == 1:
+                z_output = max(min(pid_output, self.max_rot_speed), -self.max_rot_speed)
+        else:
+            z_output = self.driver_controller.getZ() * 0.5
 
         self.drive_sub.drive(
             -wpimath.applyDeadband(
@@ -83,11 +86,11 @@ class TrackGoal(commands2.CommandBase):
             -wpimath.applyDeadband(
                 -z_output, OIConstants.kDriveTurnDeadband
             ),
-            False,
+            True,
             False),
     def isFinished(self) -> bool:
         return False
 
     def end(self, interrupted: bool) -> None:
         self.pivot_sub.set_pivot_speed(0)
-        self.shooter_sub.stop_shooter()
+        # self.shooter_sub.stop_shooter()

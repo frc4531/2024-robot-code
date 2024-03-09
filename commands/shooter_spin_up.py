@@ -12,7 +12,7 @@ class ShooterSpinUp(commands2.CommandBase):
         self.addRequirements(self.shooter_sub)
 
     def execute(self) -> None:
-        self.shooter_sub.set_velocities(-5800,6200)
+        self.shooter_sub.set_velocities(-6000,6500)
 
     def isFinished(self) -> bool:
         return False

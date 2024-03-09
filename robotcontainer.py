@@ -89,7 +89,7 @@ class RobotContainer:
                     -wpimath.applyDeadband(
                         self.driverController.getZ(), OIConstants.kDriveDeadband
                     ),
-                    False,
+                    True,
                     False,
                 ),
                 self.robotDrive,
@@ -172,12 +172,16 @@ class RobotContainer:
         )
         # Toggle Speaker Vision Tracking
         commands2.button.JoystickButton(self.operatorController, 9).toggleOnTrue(
-            TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem, self.shooterSubsystem,
+            TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
                       self.driverController)
         )
         # Hold for Manual Intake In
         commands2.button.JoystickButton(self.operatorController, 10).whileTrue(
             IntakeIn(self.intakeSubsystem)
+        )
+        # Toggle Shooter
+        commands2.button.JoystickButton(self.operatorController, 11).toggleOnTrue(
+            ShooterSpinUp(self.shooterSubsystem)
         )
 
         # Hold for Deploy Amp Flipper and Slow Shooter and Pivot to Amp Angle
