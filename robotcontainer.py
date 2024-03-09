@@ -33,6 +33,7 @@ from commands.shooter_spin_up import ShooterSpinUp
 from commands.track_game_piece import TrackGamePiece
 from commands.track_goal import TrackGoal
 from constants.swerve_constants import AutoConstants, DriveConstants, OIConstants
+from subsystems.led_subsystem import LedSubsystem
 from subsystems.right_climber_subsystem import RightClimberSubsystem
 from subsystems.left_climber_subsystem import LeftClimberSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
@@ -61,6 +62,7 @@ class RobotContainer:
         self.visionSubsystem = VisionSubsystem()
         self.rightClimberSubsystem = RightClimberSubsystem()
         self.leftClimberSubsystem = LeftClimberSubsystem()
+        self.ledSubsystem = LedSubsystem()
         self.ampSubsystem = AmpSubsystem()
 
         # The driver controllers
@@ -136,7 +138,8 @@ class RobotContainer:
         )
         # Press for Note Vision Tracking
         commands2.button.JoystickButton(self.driverController, 1).onTrue(
-            TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem, self.driverController)
+            TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem, self.ledSubsystem,
+                           self.driverController)
         )
         # Left Climber Up
         commands2.button.JoystickButton(self.operatorController, 1).whileTrue(
@@ -173,7 +176,7 @@ class RobotContainer:
         # Toggle Speaker Vision Tracking
         commands2.button.JoystickButton(self.operatorController, 9).toggleOnTrue(
             TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
-                      self.driverController)
+                      self.ledSubsystem, self.driverController)
         )
         # Hold for Manual Intake In
         commands2.button.JoystickButton(self.operatorController, 10).whileTrue(

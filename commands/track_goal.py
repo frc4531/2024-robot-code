@@ -21,7 +21,8 @@ class TrackGoal(commands2.CommandBase):
         self.vision_sub = vision_sub
         self.drive_sub = drive_sub
         self.pivot_sub = pivot_sub
-        self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub)
+        self.led_sub = led_sub
+        self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub, self.led_sub)
 
         self.close_camera_y = 20.5
         self.far_camera_y = -9.2
@@ -39,6 +40,10 @@ class TrackGoal(commands2.CommandBase):
         self.rot_controller = wpimath.controller.PIDController(0.024, 0.01, 0)
 
         self.angle_controller = wpimath.controller.PIDController(7.5, 0, 0)
+
+        # LED variables
+        self.angle_tolerance = 0.01
+        self.turn_tolerance = 0.5
 
     def initialize(self) -> None:
         self.rot_controller.setTolerance(0.1)
@@ -88,9 +93,18 @@ class TrackGoal(commands2.CommandBase):
             ),
             True,
             False),
+        # End of Turning Block, start of LED block
+
+        if -self.angle_tolerance < self.pivot_sub.get_position() < self.angle_tolerance:
+            if -self.turn_tolerance < self.vision_sub.current_intake_x < self.turn_tolerance:
+                self.led_sub.set_color(0.77)
+        else:
+            self.led_sub.set_color(0.61)
+
     def isFinished(self) -> bool:
         return False
 
     def end(self, interrupted: bool) -> None:
         self.pivot_sub.set_pivot_speed(0)
         # self.shooter_sub.stop_shooter()
+        self.led_sub.set_color(0.67)
