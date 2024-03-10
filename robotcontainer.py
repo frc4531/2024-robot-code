@@ -5,7 +5,8 @@ import commands2.button
 
 import wpimath
 import wpilib
-from commands2 import cmd
+from commands2 import cmd, WaitCommand
+from wpilib import SmartDashboard
 from wpimath._controls._controls.controller import HolonomicDriveController
 
 from wpimath.controller import PIDController, ProfiledPIDControllerRadians
@@ -20,6 +21,7 @@ from commands.climber_r_up import ClimberRUp
 from commands.climbers_down import ClimbersDown
 from commands.climbers_up import ClimbersUp
 from commands.drive_along_trajectory import DriveAlongTrajectory
+from commands.drive_turn_to_angle import DriveTurnToAngle
 # from commands.drive_along_trajectory import DriveAlongTrajectory
 from commands.intake_in import IntakeIn
 from commands.intake_in_until_loaded import IntakeInUntilLoaded
@@ -42,7 +44,6 @@ from subsystems.pivot_subsystem import PivotSubsystem
 from subsystems.shooter_subsystem import ShooterSubsystem
 from subsystems.vision_subsystem import VisionSubsystem
 from subsystems.amp_subsystem import AmpSubsystem
-
 
 
 class RobotContainer:
@@ -68,6 +69,23 @@ class RobotContainer:
         # The driver controllers
         self.driverController = wpilib.Joystick(OIConstants.kDriverControllerPort)
         self.operatorController = wpilib.Joystick(OIConstants.kOperatorControllerPort)
+
+        # Autonomous Chooser Setup
+        self.nothingAuto = "Do Nothing"
+        self.shootOneOnlyAuto = "Shoot 1 Only"
+        self.shootOneLeaveMidAuto = "MID - Shoot 1 + Leave"
+        self.shootOneLeaveSidesAuto = "SIDES - Shoot 1 + Leave"
+        self.shootTwoMidAuto = "MID - Shoot 2"
+        self.shootTwoSidesAuto = "SIDES - Shoot 2"
+        self.chooser = wpilib.SendableChooser()
+
+        self.chooser.setDefaultOption("Shoot 1 Only", self.shootOneOnlyAuto)
+        self.chooser.addOption("Do Nothing", self.nothingAuto)
+        self.chooser.addOption("MID - Shoot 1 + Leave", self.shootOneLeaveMidAuto)
+        self.chooser.addOption("SIDES - Shoot 1 + Leave", self.shootOneLeaveSidesAuto)
+        self.chooser.addOption("MID - Shoot 2", self.shootTwoMidAuto)
+        self.chooser.addOption("SIDES - Shoot 2", self.shootTwoSidesAuto)
+        SmartDashboard.putData("Auto Chooser", self.chooser)
 
         # Configure the button bindings
         self.configureButtonBindings()
@@ -119,12 +137,14 @@ class RobotContainer:
                 lambda: self.robotDrive.drive(
                     -wpimath.applyDeadband(
                         ((self.driverController.getY() * math.sin(self.robotDrive.getHeading() * (math.pi / 180))) +
-                        (self.driverController.getX() * math.cos(self.robotDrive.getHeading() * (math.pi / 180)))) * 0.5,
+                         (self.driverController.getX() * math.cos(
+                             self.robotDrive.getHeading() * (math.pi / 180)))) * 0.5,
                         OIConstants.kDriveDeadband
                     ),
                     -wpimath.applyDeadband(
                         ((-self.driverController.getY() * math.cos(self.robotDrive.getHeading() * (math.pi / 180))) +
-                        (self.driverController.getX() * math.sin(self.robotDrive.getHeading() * (math.pi / 180)))) * 0.5,
+                         (self.driverController.getX() * math.sin(
+                             self.robotDrive.getHeading() * (math.pi / 180)))) * 0.5,
                         OIConstants.kDriveDeadband
                     ),
                     -wpimath.applyDeadband(
@@ -195,14 +215,12 @@ class RobotContainer:
             ShooterAmp(self.shooterSubsystem)
         )
         commands2.button.JoystickButton(self.operatorController, 12).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.36)
+            PivotToPosition(self.pivotSubsystem, 0.38)
         )
         # Hold for Retract Amp Flipper
         commands2.button.JoystickButton(self.operatorController, 13).whileTrue(
             AmpDown(self.ampSubsystem)
         )
-
-
 
     def disablePIDSubsystems(self) -> None:
         """Disables all ProfiledPIDSubsystem and PIDSubsystem instances.
@@ -221,14 +239,25 @@ class RobotContainer:
         # Add kinematics to ensure max speed is actually obeyed
         config.setKinematics(DriveConstants.kDriveKinematics)
 
-        # An example trajectory to follow. All units in meters.
-        exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+        # Middle Auto Trajectory to follow. All units in meters.
+        mid_trajectory = TrajectoryGenerator.generateTrajectory(
             # Start at the origin facing the +X direction
             Pose2d(0, 0, Rotation2d.fromDegrees(0)),
             # Pass through these two interior waypoints, making an 's' curve path
             [],
             # End 3 meters straight ahead of where we started, facing forward
-            Pose2d(0, -2.5, Rotation2d.fromDegrees(90)),
+            Pose2d(0, -2, Rotation2d.fromDegrees(0)),
+            config,
+        )
+
+        # Left Auto Trajectory to follow. All units in meters.
+        sides_trajectory = TrajectoryGenerator.generateTrajectory(
+            # Start at the origin facing the +X direction
+            Pose2d(0, 0, Rotation2d.fromDegrees(0)),
+            # Pass through these two interior waypoints, making an 's' curve path
+            [],
+            # End 3 meters straight ahead of where we started, facing forward
+            Pose2d(0, -2, Rotation2d.fromDegrees(0)),
             config,
         )
 
@@ -241,11 +270,11 @@ class RobotContainer:
         thetaController.enableContinuousInput(-math.pi, math.pi)
 
         holonomic_controller = HolonomicDriveController(PIDController(AutoConstants.kPXController, 0, 0),
-            PIDController(AutoConstants.kPYController, 0, 0),
-            thetaController)
+                                                        PIDController(AutoConstants.kPYController, 0, 0),
+                                                        thetaController)
 
-        swerveControllerCommand = commands2.SwerveControllerCommand(
-            exampleTrajectory,
+        mid_trajectory_command = commands2.SwerveControllerCommand(
+            mid_trajectory,
             self.robotDrive.getPose,  # Functional interface to feed supplier
             DriveConstants.kDriveKinematics,
             # Position controllers
@@ -254,13 +283,85 @@ class RobotContainer:
             (self.robotDrive,),
         )
 
-        # Reset odometry to the starting pose of the trajectory.
-        self.robotDrive.resetOdometry(exampleTrajectory.initialPose())
-
-        # Run path following command, then stop at the end.
-        return swerveControllerCommand.andThen(
-            cmd.run(
-                lambda: self.robotDrive.drive(0, 0, 0, False, False),
-                self.robotDrive,
-            )
+        sides_trajectory_command = commands2.SwerveControllerCommand(
+            sides_trajectory,
+            self.robotDrive.getPose,  # Functional interface to feed supplier
+            DriveConstants.kDriveKinematics,
+            # Position controllers
+            holonomic_controller,
+            self.robotDrive.setModuleStates,
+            (self.robotDrive,),
         )
+
+        auto_selected = self.chooser.getSelected()
+
+        match auto_selected:
+            case self.nothingAuto:
+                return WaitCommand(1)
+            case self.shootOneOnlyAuto:
+                return commands2.SequentialCommandGroup(
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(2),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(2),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41),
+                        IntakeIn(self.intakeSubsystem)
+                    )
+                )
+            case self.shootOneLeaveMidAuto:
+                # Reset odometry to the starting pose of the trajectory.
+                self.robotDrive.resetOdometry(mid_trajectory.initialPose())
+
+                return commands2.SequentialCommandGroup(
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(2),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(2),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41),
+                        IntakeIn(self.intakeSubsystem)
+                    ),
+                    mid_trajectory_command.andThen(
+                        commands2.RunCommand(
+                            lambda: self.robotDrive.drive(0, 0, 0, False, False)
+                        )
+                    )
+                )
+            case self.shootOneLeaveSidesAuto:
+                return commands2.SequentialCommandGroup(
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(2),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(2),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41),
+                        IntakeIn(self.intakeSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(0.5),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False))
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(2),
+                        DriveTurnToAngle(self.robotDrive, 0)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(2),
+                        commands2.RunCommand(lambda: self.robotDrive.resetOdometry(sides_trajectory.initialPose()))
+                    ),
+                    sides_trajectory_command.andThen(
+                        commands2.RunCommand(
+                            lambda: self.robotDrive.drive(0, 0, 0, False, False)
+                        )
+                    )
+                )
