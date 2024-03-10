@@ -76,7 +76,8 @@ class RobotContainer:
         self.shootOneLeaveMidAuto = "MID - Shoot 1 + Leave"
         self.shootOneLeaveSidesAuto = "SIDES - Shoot 1 + Leave"
         self.shootTwoMidAuto = "MID - Shoot 2"
-        self.shootTwoSidesAuto = "SIDES - Shoot 2"
+        self.shootTwoLeftAuto = "LEFT - Shoot 2"
+        self.shootTwoRightAuto = "RIGHT - Shoot 2"
         self.chooser = wpilib.SendableChooser()
 
         self.chooser.setDefaultOption("Shoot 1 Only", self.shootOneOnlyAuto)
@@ -84,7 +85,8 @@ class RobotContainer:
         self.chooser.addOption("MID - Shoot 1 + Leave", self.shootOneLeaveMidAuto)
         self.chooser.addOption("SIDES - Shoot 1 + Leave", self.shootOneLeaveSidesAuto)
         self.chooser.addOption("MID - Shoot 2", self.shootTwoMidAuto)
-        self.chooser.addOption("SIDES - Shoot 2", self.shootTwoSidesAuto)
+        self.chooser.addOption("LEFT - Shoot 2", self.shootTwoLeftAuto)
+        self.chooser.addOption("RIGHT - Shoot 2", self.shootTwoRightAuto)
         SmartDashboard.putData("Auto Chooser", self.chooser)
 
         # Configure the button bindings
@@ -301,7 +303,7 @@ class RobotContainer:
             case self.shootOneOnlyAuto:
                 return commands2.SequentialCommandGroup(
                     commands2.ParallelDeadlineGroup(
-                        commands2.WaitCommand(2),
+                        commands2.WaitCommand(1),
                         ShooterSpinUp(self.shooterSubsystem),
                         PivotToPosition(self.pivotSubsystem, 0.41)
                     ),
@@ -318,7 +320,7 @@ class RobotContainer:
 
                 return commands2.SequentialCommandGroup(
                     commands2.ParallelDeadlineGroup(
-                        commands2.WaitCommand(2),
+                        commands2.WaitCommand(1),
                         ShooterSpinUp(self.shooterSubsystem),
                         PivotToPosition(self.pivotSubsystem, 0.41)
                     ),
@@ -337,7 +339,7 @@ class RobotContainer:
             case self.shootOneLeaveSidesAuto:
                 return commands2.SequentialCommandGroup(
                     commands2.ParallelDeadlineGroup(
-                        commands2.WaitCommand(2),
+                        commands2.WaitCommand(1),
                         ShooterSpinUp(self.shooterSubsystem),
                         PivotToPosition(self.pivotSubsystem, 0.41)
                     ),
@@ -363,5 +365,160 @@ class RobotContainer:
                         commands2.RunCommand(
                             lambda: self.robotDrive.drive(0, 0, 0, False, False)
                         )
+                    )
+                )
+            case self.shootTwoMidAuto:
+                # Reset odometry to the starting pose of the trajectory.
+                self.robotDrive.resetOdometry(mid_trajectory.initialPose())
+
+                return commands2.SequentialCommandGroup(
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(1),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(2),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41),
+                        IntakeIn(self.intakeSubsystem)
+                    ),
+                    TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
+                                   self.ledSubsystem, self.driverController
+                                   ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(2),
+                        TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
+                                  self.ledSubsystem, self.driverController
+                                  ),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(2),
+                        TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
+                                  self.ledSubsystem, self.driverController
+                                  ),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        IntakeIn(self.intakeSubsystem)
+                    )
+                )
+            case self.shootTwoRightAuto:
+                return commands2.SequentialCommandGroup(
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(1.5),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(2),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41),
+                        IntakeIn(self.intakeSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(0.5),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False)),
+                        ShooterSpinUp(self.shooterSubsystem),
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(1.25),
+                        DriveTurnToAngle(self.robotDrive, 0),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(0.5),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False)),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
+                                       self.ledSubsystem, self.driverController
+                                       ),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(1.25),
+                        DriveTurnToAngle(self.robotDrive, -30),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(0.5),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, 0.2, 0, True, False)),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(2),
+                        TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
+                                  self.ledSubsystem, self.driverController
+                                  ),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(5),
+                        TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
+                                  self.ledSubsystem, self.driverController
+                                  ),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        IntakeIn(self.intakeSubsystem)
+                    )
+                )
+            case self.shootTwoLeftAuto:
+                return commands2.SequentialCommandGroup(
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(1.5),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(2),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.41),
+                        IntakeIn(self.intakeSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(0.5),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False)),
+                        ShooterSpinUp(self.shooterSubsystem),
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(1.25),
+                        DriveTurnToAngle(self.robotDrive, 0),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(0.5),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False)),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
+                                       self.ledSubsystem, self.driverController
+                                       ),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(1.25),
+                        DriveTurnToAngle(self.robotDrive, 30),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(0.5),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, 0.2, 0, True, False)),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(2),
+                        TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
+                                  self.ledSubsystem, self.driverController
+                                  ),
+                        ShooterSpinUp(self.shooterSubsystem)
+                    ),
+                    commands2.ParallelDeadlineGroup(
+                        WaitCommand(5),
+                        TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
+                                  self.ledSubsystem, self.driverController
+                                  ),
+                        ShooterSpinUp(self.shooterSubsystem),
+                        IntakeIn(self.intakeSubsystem)
                     )
                 )
