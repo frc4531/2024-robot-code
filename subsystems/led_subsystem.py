@@ -1,6 +1,7 @@
 import rev
 import wpilib
 from commands2 import SubsystemBase
+from wpilib import AddressableLED
 
 
 class LedSubsystem(SubsystemBase):
