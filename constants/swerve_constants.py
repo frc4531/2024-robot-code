@@ -126,7 +126,7 @@ class ModuleConstants:
     kDrivingMotorIdleMode = CANSparkFlex.IdleMode.kBrake
     kTurningMotorIdleMode = CANSparkMax.IdleMode.kBrake
 
-    kDrivingMotorCurrentLimit = 80  # amp
+    kDrivingMotorCurrentLimit = 60  # amp
     kTurningMotorCurrentLimit = 20  # amp
 
 

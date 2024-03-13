@@ -56,11 +56,21 @@ class TrackGoal(commands2.CommandBase):
             if self.close_camera_y > self.vision_sub.current_shoot_y > self.far_camera_y:
                 target_angle = (((self.vision_sub.current_shoot_y-self.far_camera_y) * self.angle_range) / self.cam_range) + self.far_angle
                 wpilib.SmartDashboard.putNumber("Target Angle", target_angle)
-                if self.far_angle < target_angle < self.close_angle:
-                    angle_output = self.angle_controller.calculate(self.pivot_sub.get_position(), target_angle)
-                    self.pivot_sub.set_pivot_speed(angle_output)
-                else:
-                    self.pivot_sub.set_pivot_speed(0)
+                target_angle = max(self.far_angle, min(self.close_angle, target_angle))
+                angle_output = self.angle_controller.calculate(self.pivot_sub.get_position(), target_angle)
+                self.pivot_sub.set_pivot_speed(angle_output)
+            elif self.vision_sub.current_shoot_y > self.close_camera_y:
+                target_angle = self.close_angle
+                angle_output = self.angle_controller.calculate(self.pivot_sub.get_position(), target_angle)
+                self.pivot_sub.set_pivot_speed(angle_output)
+            elif self.vision_sub.current_shoot_y < self.far_camera_y:
+                target_angle = self.far_angle
+                angle_output = self.angle_controller.calculate(self.pivot_sub.get_position(), target_angle)
+                self.pivot_sub.set_pivot_speed(angle_output)
+            else:
+                self.pivot_sub.set_pivot_speed(0)
+        else:
+            self.pivot_sub.set_pivot_speed(0)
 
         # ---- END ANGLE BLOCK, START TURN BLOCK
         if self.vision_sub.current_shoot_v == 1:
