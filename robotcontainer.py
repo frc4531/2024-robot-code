@@ -217,7 +217,7 @@ class RobotContainer:
             ShooterAmp(self.shooterSubsystem)
         )
         commands2.button.JoystickButton(self.operatorController, 12).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.36)
+            PivotToPosition(self.pivotSubsystem, 0.366)
         )
         # Hold for Retract Amp Flipper
         commands2.button.JoystickButton(self.operatorController, 13).whileTrue(
@@ -383,6 +383,10 @@ class RobotContainer:
                         PivotToPosition(self.pivotSubsystem, 0.41),
                         IntakeIn(self.intakeSubsystem)
                     ),
+                    commands2.ParallelDeadlineGroup(
+                        commands2.WaitCommand(0.5),
+                        PivotToPosition(self.pivotSubsystem, 0.36)
+                    ),
                     TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
                                    self.ledSubsystem, self.driverController
                                    ),
@@ -419,6 +423,7 @@ class RobotContainer:
                         WaitCommand(0.5),
                         commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False)),
                         ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.36)
                     ),
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(1.25),
@@ -479,6 +484,7 @@ class RobotContainer:
                         WaitCommand(0.5),
                         commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False)),
                         ShooterSpinUp(self.shooterSubsystem),
+                        PivotToPosition(self.pivotSubsystem, 0.36)
                     ),
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(1.25),

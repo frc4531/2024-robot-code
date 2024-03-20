@@ -1,9 +1,12 @@
 import rev
 from commands2 import SubsystemBase
+from wpilib import SmartDashboard
 
 
 class ShooterSubsystem(SubsystemBase):
     # Create a new VisionSubsystem
+
+    shooter_active = False
 
     def __init__(self) -> None:
         super().__init__()
@@ -58,6 +61,10 @@ class ShooterSubsystem(SubsystemBase):
         self.right_shooter_motor.setPeriodicFramePeriod(rev.CANSparkFlex.PeriodicFrame.kStatus1, 25)
 
         # Sets velocity targets for both shooter motors
+
+    def periodic(self):
+        SmartDashboard.putBoolean("Shooter Active", self.shooter_active)
+
     def set_velocities(self, left_velocity,right_velocity):
         self.left_pid_controller.setReference(left_velocity, rev.CANSparkFlex.ControlType.kVelocity)
         self.right_pid_controller.setReference(right_velocity, rev.CANSparkFlex.ControlType.kVelocity)

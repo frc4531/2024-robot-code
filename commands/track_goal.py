@@ -24,7 +24,7 @@ class TrackGoal(commands2.CommandBase):
         self.led_sub = led_sub
         self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub, self.led_sub)
 
-        self.close_camera_y = 20.5
+        self.close_camera_y = 19.5
         self.far_camera_y = -9.2
         self.close_angle = 0.41
         self.far_angle = 0.342
