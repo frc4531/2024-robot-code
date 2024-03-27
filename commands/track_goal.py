@@ -3,6 +3,7 @@ import math
 import commands2
 import wpilib
 import wpimath.controller
+from wpilib import SmartDashboard
 
 from constants.swerve_constants import OIConstants
 from subsystems.led_subsystem import LedSubsystem
@@ -15,19 +16,18 @@ from subsystems.drivesubsystem import DriveSubsystem
 class TrackGoal(commands2.CommandBase):
 
     def __init__(self, vision_sub: VisionSubsystem, drive_sub: DriveSubsystem, pivot_sub: PivotSubsystem,
-                 led_sub: LedSubsystem, stick: wpilib.Joystick) -> None:
+                stick: wpilib.Joystick) -> None:
         super().__init__()
 
         self.vision_sub = vision_sub
         self.drive_sub = drive_sub
         self.pivot_sub = pivot_sub
-        self.led_sub = led_sub
-        self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub, self.led_sub)
+        self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub)
 
         self.close_camera_y = 19.5
         self.far_camera_y = -9.2
         self.close_angle = 0.41
-        self.far_angle = 0.342
+        self.far_angle = 0.348 #3/23 10:00 - 0.342
 
         self.cam_range = abs(self.close_camera_y - self.far_camera_y)
         self.angle_range = abs(self.close_angle-self.far_angle)
@@ -48,6 +48,8 @@ class TrackGoal(commands2.CommandBase):
     def initialize(self) -> None:
         self.rot_controller.setTolerance(0.1)
         # self.shooter_sub.set_velocities(-6000, 6500)
+
+        SmartDashboard.putBoolean("LED_TrackingGoal", True)
 
     def execute(self) -> None:
         target_angle = 0.36
@@ -103,17 +105,11 @@ class TrackGoal(commands2.CommandBase):
             ),
             True,
             False),
-        # End of Turning Block, start of LED block
-        if -self.angle_tolerance < self.pivot_sub.get_position() < self.angle_tolerance:
-            if -self.turn_tolerance < self.vision_sub.current_intake_x < self.turn_tolerance:
-                self.led_sub.set_color(0.77)
-        else:
-            self.led_sub.set_color(0.61)
-
     def isFinished(self) -> bool:
         return False
 
     def end(self, interrupted: bool) -> None:
+        SmartDashboard.putBoolean("LED_TrackingGoal", False)
         self.pivot_sub.set_pivot_speed(0)
         # self.shooter_sub.stop_shooter()
-        self.led_sub.set_color(0.67)
+

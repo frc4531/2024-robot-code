@@ -160,7 +160,7 @@ class RobotContainer:
         )
         # Press for Note Vision Tracking
         commands2.button.JoystickButton(self.driverController, 1).onTrue(
-            TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem, self.ledSubsystem,
+            TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
                            self.driverController)
         )
         # Left Climber Up
@@ -198,7 +198,7 @@ class RobotContainer:
         # Toggle Speaker Vision Tracking
         commands2.button.JoystickButton(self.operatorController, 9).toggleOnTrue(
             TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
-                      self.ledSubsystem, self.driverController)
+                      self.driverController)
         )
         # Hold for Manual Intake In
         commands2.button.JoystickButton(self.operatorController, 10).whileTrue(
@@ -388,19 +388,19 @@ class RobotContainer:
                         PivotToPosition(self.pivotSubsystem, 0.36)
                     ),
                     TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
-                                   self.ledSubsystem, self.driverController
+                                   self.driverController
                                    ),
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(2),
                         TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
-                                  self.ledSubsystem, self.driverController
+                                  self.driverController
                                   ),
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(2),
                         TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
-                                  self.ledSubsystem, self.driverController
+                                  self.driverController
                                   ),
                         ShooterSpinUp(self.shooterSubsystem),
                         IntakeIn(self.intakeSubsystem)
@@ -437,7 +437,7 @@ class RobotContainer:
                     ),
                     commands2.ParallelDeadlineGroup(
                         TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
-                                       self.ledSubsystem, self.driverController
+                                       self.driverController
                                        ),
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
@@ -454,14 +454,14 @@ class RobotContainer:
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(2),
                         TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
-                                  self.ledSubsystem, self.driverController
+                                  self.driverController
                                   ),
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(5),
                         TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
-                                  self.ledSubsystem, self.driverController
+                                  self.driverController
                                   ),
                         ShooterSpinUp(self.shooterSubsystem),
                         IntakeIn(self.intakeSubsystem)
@@ -498,7 +498,7 @@ class RobotContainer:
                     ),
                     commands2.ParallelDeadlineGroup(
                         TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
-                                       self.ledSubsystem, self.driverController
+                                       self.driverController
                                        ),
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
@@ -515,14 +515,14 @@ class RobotContainer:
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(2),
                         TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
-                                  self.ledSubsystem, self.driverController
+                                  self.driverController
                                   ),
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(5),
                         TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
-                                  self.ledSubsystem, self.driverController
+                                  self.driverController
                                   ),
                         ShooterSpinUp(self.shooterSubsystem),
                         IntakeIn(self.intakeSubsystem)

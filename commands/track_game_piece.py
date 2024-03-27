@@ -3,10 +3,10 @@ import math
 import commands2
 import wpilib
 import wpimath.controller
+from wpilib import SmartDashboard
 
 from constants.swerve_constants import OIConstants
 from subsystems.intake_subsystem import IntakeSubsystem
-from subsystems.led_subsystem import LedSubsystem
 from subsystems.vision_subsystem import VisionSubsystem
 from subsystems.drivesubsystem import DriveSubsystem
 
@@ -14,14 +14,13 @@ from subsystems.drivesubsystem import DriveSubsystem
 class TrackGamePiece(commands2.CommandBase):
 
     def __init__(self, vision_sub: VisionSubsystem, drive_sub: DriveSubsystem,
-                 intake_sub: IntakeSubsystem, led_sub: LedSubsystem, stick: wpilib.Joystick) -> None:
+                 intake_sub: IntakeSubsystem, stick: wpilib.Joystick) -> None:
         super().__init__()
 
         self.vision_sub = vision_sub
         self.drive_sub = drive_sub
         self.intake_sub = intake_sub
-        self.led_sub = led_sub
-        self.addRequirements(self.vision_sub, self.drive_sub, self.intake_sub, self.led_sub)
+        self.addRequirements(self.vision_sub, self.drive_sub, self.intake_sub)
 
         self.driver_controller = stick
         self.max_rot_speed = 0.8
@@ -37,7 +36,7 @@ class TrackGamePiece(commands2.CommandBase):
     def initialize(self) -> None:
         self.rot_controller.setTolerance(0.2)
 
-        self.led_sub.set_color(-0.05)
+        SmartDashboard.putBoolean("LED_TrackingGamePiece", True)
 
     def execute(self) -> None:
         self.intake_sub.set_intake_speed(0.7)
@@ -98,11 +97,11 @@ class TrackGamePiece(commands2.CommandBase):
                 True,
                 False,
             )
+
     def isFinished(self) -> bool:
         return self.prox_has_been_false and not self.intake_sub.intake_prox.get()
 
-
     def end(self, interrupted: bool) -> None:
         self.intake_sub.set_intake_speed(0)
-
-        self.led_sub.set_color(0.65)
+        SmartDashboard.putBoolean("LED_TrackingGamePiece", False)
+        SmartDashboard.putBoolean("LED_NewGamePiece", True)
