@@ -13,7 +13,12 @@ class IntakeIn(commands2.CommandBase):
         self.addRequirements(self.intake_sub)
 
     def execute(self) -> None:
-        self.intake_sub.set_intake_speed(0.9)
+        shooter_on = SmartDashboard.getBoolean("LED_ShooterActive", True)
+        if not shooter_on:
+            self.intake_sub.set_intake_speed(0)
+        else:
+            self.intake_sub.set_intake_speed(0.9)
+
 
     def isFinished(self) -> bool:
         return False

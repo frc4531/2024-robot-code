@@ -163,6 +163,9 @@ class RobotContainer:
             TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
                            self.driverController)
         )
+        commands2.button.JoystickButton(self.driverController, 1).onTrue(
+            PivotToPosition(self.pivotSubsystem, 0.36)
+        )
         # Left Climber Up
         commands2.button.JoystickButton(self.operatorController, 1).whileTrue(
             ClimberLUp(self.leftClimberSubsystem)
