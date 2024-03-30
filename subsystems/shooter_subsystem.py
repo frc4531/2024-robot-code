@@ -73,6 +73,10 @@ class ShooterSubsystem(SubsystemBase):
         self.left_shooter_motor.set(left_percent)
         self.right_shooter_motor.set(right_percent)
 
+    def set_voltage_speed(self, left_volts, right_volts):
+        self.left_shooter_motor.setVoltage(left_volts)
+        self.right_shooter_motor.setVoltage(right_volts)
+
     def stop_shooter(self):
         self.left_shooter_motor.stopMotor()
         self.right_shooter_motor.stopMotor()

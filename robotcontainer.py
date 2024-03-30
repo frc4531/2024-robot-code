@@ -220,7 +220,7 @@ class RobotContainer:
             ShooterAmp(self.shooterSubsystem)
         )
         commands2.button.JoystickButton(self.operatorController, 12).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.366)
+            PivotToPosition(self.pivotSubsystem, 0.36)
         )
         # Hold for Retract Amp Flipper
         commands2.button.JoystickButton(self.operatorController, 13).whileTrue(

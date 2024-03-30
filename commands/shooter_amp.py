@@ -16,7 +16,7 @@ class ShooterAmp(commands2.CommandBase):
         SmartDashboard.putBoolean("LED_ShooterActive", True)
 
     def execute(self) -> None:
-        self.shooter_sub.set_percentage_speed(-0.17, 0.17)  # 7:38, 0.2, 7:46 0.4
+        self.shooter_sub.set_voltage_speed(-4, 4)  # 7:38, 0.2, 7:46 0.4
 
     def isFinished(self) -> bool:
         return False
