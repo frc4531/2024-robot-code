@@ -220,7 +220,7 @@ class RobotContainer:
             ShooterAmp(self.shooterSubsystem)
         )
         commands2.button.JoystickButton(self.operatorController, 12).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.36)
+            PivotToPosition(self.pivotSubsystem, 0.368)
         )
         # Hold for Retract Amp Flipper
         commands2.button.JoystickButton(self.operatorController, 13).whileTrue(
@@ -353,8 +353,8 @@ class RobotContainer:
                         IntakeIn(self.intakeSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
-                        WaitCommand(0.5),
-                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False))
+                        WaitCommand(0.3),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.4, 0, True, False))
                     ),
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(2),
@@ -388,13 +388,13 @@ class RobotContainer:
                     ),
                     commands2.ParallelDeadlineGroup(
                         commands2.WaitCommand(0.5),
-                        PivotToPosition(self.pivotSubsystem, 0.36)
+                        PivotToPosition(self.pivotSubsystem, 0.37)
                     ),
                     TrackGamePiece(self.visionSubsystem, self.robotDrive, self.intakeSubsystem,
                                    self.driverController
                                    ),
                     commands2.ParallelDeadlineGroup(
-                        WaitCommand(2),
+                        WaitCommand(1.5),
                         TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
                                   self.driverController
                                   ),
@@ -417,16 +417,16 @@ class RobotContainer:
                         PivotToPosition(self.pivotSubsystem, 0.41)
                     ),
                     commands2.ParallelDeadlineGroup(
-                        commands2.WaitCommand(2),
+                        commands2.WaitCommand(1.5),
                         ShooterSpinUp(self.shooterSubsystem),
                         PivotToPosition(self.pivotSubsystem, 0.41),
                         IntakeIn(self.intakeSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
-                        WaitCommand(0.5),
-                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False)),
+                        WaitCommand(0.3),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.4, 0, True, False)),
                         ShooterSpinUp(self.shooterSubsystem),
-                        PivotToPosition(self.pivotSubsystem, 0.36)
+                        PivotToPosition(self.pivotSubsystem, 0.37)
                     ),
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(1.25),
@@ -450,12 +450,12 @@ class RobotContainer:
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
-                        WaitCommand(0.5),
-                        commands2.RunCommand(lambda: self.robotDrive.drive(0, 0.2, 0, True, False)),
+                        WaitCommand(0.3),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, 0.4, 0, True, False)),
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
-                        WaitCommand(2),
+                        WaitCommand(1.25),
                         TrackGoal(self.visionSubsystem, self.robotDrive, self.pivotSubsystem,
                                   self.driverController
                                   ),
@@ -478,16 +478,16 @@ class RobotContainer:
                         PivotToPosition(self.pivotSubsystem, 0.41)
                     ),
                     commands2.ParallelDeadlineGroup(
-                        commands2.WaitCommand(2),
+                        commands2.WaitCommand(1.5),
                         ShooterSpinUp(self.shooterSubsystem),
                         PivotToPosition(self.pivotSubsystem, 0.41),
                         IntakeIn(self.intakeSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
-                        WaitCommand(0.5),
-                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False)),
+                        WaitCommand(0.3),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.4, 0, True, False)),
                         ShooterSpinUp(self.shooterSubsystem),
-                        PivotToPosition(self.pivotSubsystem, 0.36)
+                        PivotToPosition(self.pivotSubsystem, 0.37)
                     ),
                     commands2.ParallelDeadlineGroup(
                         WaitCommand(1.25),
@@ -495,8 +495,8 @@ class RobotContainer:
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
-                        WaitCommand(0.5),
-                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.2, 0, True, False)),
+                        WaitCommand(0.3),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, -0.4, 0, True, False)),
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
@@ -511,8 +511,8 @@ class RobotContainer:
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(
-                        WaitCommand(0.5),
-                        commands2.RunCommand(lambda: self.robotDrive.drive(0, 0.2, 0, True, False)),
+                        WaitCommand(0.3),
+                        commands2.RunCommand(lambda: self.robotDrive.drive(0, 0.4, 0, True, False)),
                         ShooterSpinUp(self.shooterSubsystem)
                     ),
                     commands2.ParallelDeadlineGroup(

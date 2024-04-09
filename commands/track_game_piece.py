@@ -27,7 +27,7 @@ class TrackGamePiece(commands2.CommandBase):
         self.min_rot_speed = 0.05
 
         self.alignment_tolerance = 7.5
-        self.forward_speed = 0.2
+        self.forward_speed = 0.3
 
         self.rot_controller = wpimath.controller.PIDController(0.011, 0, 0)
 
