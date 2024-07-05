@@ -135,7 +135,7 @@ class OIConstants:
     kOperatorControllerPort = 1
 
     kDriveDeadband = 0.05
-    kDriveTurnDeadband = 0.1
+    kDriveTurnDeadband = 0.2
 
 
 class AutoConstants:

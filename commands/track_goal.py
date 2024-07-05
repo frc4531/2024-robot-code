@@ -24,10 +24,10 @@ class TrackGoal(commands2.CommandBase):
         self.pivot_sub = pivot_sub
         self.addRequirements(self.vision_sub, self.drive_sub, self.pivot_sub)
 
-        self.close_camera_y = 19.5
-        self.far_camera_y = -9.2
-        self.close_angle = 0.41
-        self.far_angle = 0.348 #3/23 10:00 - 0.342
+        self.close_camera_y = 18.7 #O.G. 19.5
+        self.far_camera_y = -6.7 #O.G. -9.2
+        self.close_angle = 0.39 #O.G. 0.41
+        self.far_angle = 0.352 #3/23 10:00 - 0.342, O.G. 0.348
 
         self.cam_range = abs(self.close_camera_y - self.far_camera_y)
         self.angle_range = abs(self.close_angle-self.far_angle)
@@ -39,7 +39,7 @@ class TrackGoal(commands2.CommandBase):
 
         self.rot_controller = wpimath.controller.PIDController(0.024, 0.01, 0)
 
-        self.angle_controller = wpimath.controller.PIDController(7.5, 0, 0)
+        self.angle_controller = wpimath.controller.PIDController(7.25, 0, 0)
 
         # LED variables
         self.angle_tolerance = 0.05

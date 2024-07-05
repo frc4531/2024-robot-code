@@ -150,8 +150,8 @@ class RobotContainer:
                         OIConstants.kDriveDeadband
                     ),
                     -wpimath.applyDeadband(
-                        self.driverController.getZ() * 0.5, OIConstants.kDriveTurnDeadband
-                    ),
+                        self.driverController.getZ() * 0.6, OIConstants.kDriveTurnDeadband
+                    ), #O.G. 0.5
                     True,
                     False,
                 ),

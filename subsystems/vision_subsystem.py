@@ -1,7 +1,6 @@
 import ntcore
 import wpilib
 
-from networktables import NetworkTables
 from commands2 import SubsystemBase
 
 
