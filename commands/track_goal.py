@@ -26,8 +26,8 @@ class TrackGoal(commands2.CommandBase):
 
         self.close_camera_y = 18.7 #O.G. 19.5
         self.far_camera_y = -6.7 #O.G. -9.2
-        self.close_angle = 0.39 #O.G. 0.41
-        self.far_angle = 0.352 #3/23 10:00 - 0.342, O.G. 0.348
+        self.close_angle = 0.41 #O.G. 0.41
+        self.far_angle = 0.35 #3/23 10:00 - 0.342, O.G. 0.348
 
         self.cam_range = abs(self.close_camera_y - self.far_camera_y)
         self.angle_range = abs(self.close_angle-self.far_angle)

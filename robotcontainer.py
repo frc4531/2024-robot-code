@@ -212,15 +212,12 @@ class RobotContainer:
             ShooterSpinUp(self.shooterSubsystem)
         )
 
-        # Hold for Deploy Amp Flipper and Slow Shooter and Pivot to Amp Angle
+        # To Angle and Shooter on for pass behind Stage
         commands2.button.JoystickButton(self.operatorController, 12).whileTrue(
-            AmpUp(self.ampSubsystem)
-        )
-        commands2.button.JoystickButton(self.operatorController, 12).whileTrue(
-            ShooterAmp(self.shooterSubsystem)
+            ShooterSpinUp(self.shooterSubsystem)
         )
         commands2.button.JoystickButton(self.operatorController, 12).onTrue(
-            PivotToPosition(self.pivotSubsystem, 0.368)
+            PivotToPosition(self.pivotSubsystem, 0.378)
         )
         # Hold for Retract Amp Flipper
         commands2.button.JoystickButton(self.operatorController, 13).whileTrue(
